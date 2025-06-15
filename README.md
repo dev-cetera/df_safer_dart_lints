@@ -1,0 +1,1 @@
+Custom lints for the [df_safer_dart](https://pub.dev/packages/df_safer_dart) package.
