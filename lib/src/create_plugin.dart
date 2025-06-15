@@ -21,8 +21,6 @@ PluginBase createPlugin() => _DfSaferDartLinter();
 class _DfSaferDartLinter extends PluginBase {
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) {
-    return [
-      const MustHandleReturnRule(),
-    ];
+    return [const MustHandleReturnRule()];
   }
 }

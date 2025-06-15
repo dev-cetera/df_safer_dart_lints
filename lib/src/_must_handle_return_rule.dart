@@ -33,8 +33,10 @@ class MustHandleReturnRule extends DartLintRule {
 
   static const _code = LintCode(
     name: 'must_handle_return',
-    problemMessage: 'The return value of a function annotated with @mustHandleReturn must be used.',
-    correctionMessage: 'Assign the result to a variable, or use it in an expression.',
+    problemMessage:
+        'The return value of a function annotated with @mustHandleReturn must be used.',
+    correctionMessage:
+        'Assign the result to a variable, or use it in an expression.',
     errorSeverity: ErrorSeverity.WARNING,
   );
 
@@ -49,7 +51,11 @@ class MustHandleReturnRule extends DartLintRule {
   //
 
   @override
-  void run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) {
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
     // We register visitors for the specific AST nodes that represent calls.
     // This is more robust than listening for the general InvocationExpression.
 
@@ -123,13 +129,16 @@ class MustHandleReturnRule extends DartLintRule {
 
   bool _isResultUnused(AstNode node) {
     // For identifiers, we need to check the parent to see if it's an invocation.
-    final nodeToCheck = node.parent is InvocationExpression ? node.parent! : node;
+    final nodeToCheck = node.parent is InvocationExpression
+        ? node.parent!
+        : node;
 
     var parent = nodeToCheck.parent;
     if (parent is CascadeExpression) return true;
     while (parent != null) {
       if (parent is ExpressionStatement) return true;
-      if (parent is! ParenthesizedExpression && parent is! AwaitExpression) return false;
+      if (parent is! ParenthesizedExpression && parent is! AwaitExpression)
+        return false;
       parent = parent.parent;
     }
     return false;
