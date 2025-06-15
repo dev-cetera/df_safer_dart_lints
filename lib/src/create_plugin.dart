@@ -10,7 +10,19 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-/// Lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotation package.
-library;
+import 'package:custom_lint_builder/custom_lint_builder.dart';
 
-export '/src/create_plugin.dart';
+import '/src/_must_handle_return_rule.dart';
+
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+PluginBase createPlugin() => _DfSaferDartLinter();
+
+class _DfSaferDartLinter extends PluginBase {
+  @override
+  List<LintRule> getLintRules(CustomLintConfigs configs) {
+    return [
+      const MustHandleReturnRule(),
+    ];
+  }
+}

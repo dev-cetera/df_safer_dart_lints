@@ -1,3 +1,15 @@
+//.title
+// ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+//
+// Dart/Flutter (DF) Packages by dev-cetera.com & contributors. The use of this
+// source code is governed by an MIT-style license described in the LICENSE
+// file located in this project's root directory.
+//
+// See: https://opensource.org/license/mit
+//
+// ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+//.title~
+
 // ignore_for_file: deprecated_member_use
 
 import 'package:analyzer/dart/ast/ast.dart';
@@ -7,13 +19,18 @@ import 'package:analyzer/error/error.dart' show ErrorSeverity;
 import 'package:analyzer/error/listener.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 
-// The TypeChecker is the robust way to check for an annotation.
-const _annotationChecker = TypeChecker.fromName(
-  'MustHandleReturn', // The class name of the annotation
-  packageName: 'df_safer_dart', // The package where it's defined
-);
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 class MustHandleReturnRule extends DartLintRule {
+  //
+  //
+  //
+
+  static const _annotationChecker = TypeChecker.fromName(
+    'MustHandleReturnAnnotation',
+    packageName: 'df_safer_dart_annotations',
+  );
+
   static const _code = LintCode(
     name: 'must_handle_return',
     problemMessage: 'The return value of a function annotated with @mustHandleReturn must be used.',
@@ -21,52 +38,95 @@ class MustHandleReturnRule extends DartLintRule {
     errorSeverity: ErrorSeverity.WARNING,
   );
 
-  MustHandleReturnRule() : super(code: _code);
+  //
+  //
+  //
+
+  const MustHandleReturnRule() : super(code: _code);
+
+  //
+  //
+  //
 
   @override
   void run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) {
-    context.registry.addInvocationExpression((node) {
-      // Use the stable `.element` getter.
-      final element = node.staticInvokeType?.element;
+    // We register visitors for the specific AST nodes that represent calls.
+    // This is more robust than listening for the general InvocationExpression.
 
-      if (element is! ExecutableElement) return;
+    // Catches `myFunction()` or `myObject.myMethod()`.
+    context.registry.addMethodInvocation((node) {
+      final element = node.methodName.staticElement;
+      _check(node: node, element: element, reporter: reporter);
+    });
 
-      final returnType = element.returnType;
-      // This is the correct, modern way to check for these types.
-      if (returnType is VoidType || returnType is NeverType) return;
+    // Catches `MyClass()` or `MyClass.named()`.
+    context.registry.addInstanceCreationExpression((node) {
+      final element = node.constructorName.staticElement;
+      _check(node: node, element: element, reporter: reporter);
+    });
 
-      if (_hasMustHandleReturnAnnotation(element) && _isResultUnused(node)) {
-        reporter.atNode(node, _code);
-      }
+    // Catches `myGetter` where the getter is annotated.
+    context.registry.addPrefixedIdentifier((node) {
+      final element = node.staticElement;
+      _check(node: node, element: element, reporter: reporter);
+    });
+    context.registry.addSimpleIdentifier((node) {
+      // To avoid double-reporting, only check simple identifiers if they
+      // aren't part of a method invocation already handled above.
+      if (node.parent is MethodInvocation) return;
+      final element = node.staticElement;
+      _check(node: node, element: element, reporter: reporter);
     });
   }
 
-  /// Checks if the given [Element] has the `@mustHandleReturn` annotation.
+  //
+  //
+  //
+
+  /// A unified check that runs on the resolved element from any AST node.
+  void _check({
+    required AstNode node,
+    required Element? element,
+    required ErrorReporter reporter,
+  }) {
+    if (element is! ExecutableElement) return;
+
+    final returnType = element.returnType;
+    if (returnType is VoidType || returnType is NeverType) return;
+
+    if (_hasMustHandleReturnAnnotation(element) && _isResultUnused(node)) {
+      reporter.atNode(node, _code);
+    }
+  }
+
+  //
+  //
+  //
+
   bool _hasMustHandleReturnAnnotation(ExecutableElement element) {
-    // First, check for an annotation directly on the function/method.
     if (_annotationChecker.hasAnnotationOf(element)) {
       return true;
     }
 
-    // If the element is a getter, the annotation is on its corresponding
-    // variable, not on the getter itself.
     if (element is PropertyAccessorElement && element.isGetter) {
-      // Use the modern `.variable2` property and handle its nullability.
       final variable = element.variable2;
       if (variable != null && _annotationChecker.hasAnnotationOf(variable)) {
         return true;
       }
     }
-
     return false;
   }
 
-  /// Determines if the result of an invocation is "unused".
-  bool _isResultUnused(InvocationExpression node) {
-    var parent = node.parent;
+  //
+  //
+  //
 
+  bool _isResultUnused(AstNode node) {
+    // For identifiers, we need to check the parent to see if it's an invocation.
+    final nodeToCheck = node.parent is InvocationExpression ? node.parent! : node;
+
+    var parent = nodeToCheck.parent;
     if (parent is CascadeExpression) return true;
-
     while (parent != null) {
       if (parent is ExpressionStatement) return true;
       if (parent is! ParenthesizedExpression && parent is! AwaitExpression) return false;
