@@ -138,7 +138,8 @@ class _UnawaitedFutureVisitor extends RecursiveAstVisitor<void> {
     }
 
     // Handled if assigned to a variable. THIS IS THE CORRECT TYPE.
-    if (parent is VariableDeclarationStatement || parent is AssignmentExpression) {
+    if (parent is VariableDeclarationStatement ||
+        parent is AssignmentExpression) {
       return true;
     }
 
