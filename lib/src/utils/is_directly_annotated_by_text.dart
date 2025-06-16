@@ -10,52 +10,20 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-// ignore_for_file: deprecated_member_use
-
-import '/_common.dart';
+import 'package:analyzer/dart/ast/ast.dart' show Declaration;
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class MustUseMonadRule extends DartLintRule {
-  //
-  //
-  //
-
-  final String shortName;
-  final String longName;
-  final String packageName;
-
-  MustUseMonadRule({
-    required super.code,
-    required this.shortName,
-    required this.longName,
-    required this.packageName,
-  });
-
-  late final _checker = TypeChecker.fromName(
-    longName,
-    packageName: packageName,
-  );
-
-  //
-  //
-  //
-
-  @override
-  void run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) {
-    context.registry.addExpressionStatement((node) {
-      final expression = node.expression;
-
-      if (expression is AssignmentExpression) {
-        return;
-      }
-      final type = expression.staticType;
-      if (type == null || type is VoidType || type is NeverType) {
-        return;
-      }
-      if (_checker.isSuperTypeOf(type)) {
-        reporter.atNode(expression, code);
-      }
-    });
+bool isDirectlyAnnotatedByText(
+  Declaration node,
+  String shortName,
+  String longName,
+) {
+  for (final metadata in node.metadata) {
+    final source = metadata.toSource();
+    if (source.contains(shortName) || source.contains(longName)) {
+      return true;
+    }
   }
+  return false;
 }

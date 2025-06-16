@@ -1,24 +1,45 @@
-import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/error/error.dart' show ErrorSeverity;
-import 'package:analyzer/error/listener.dart';
-import 'package:custom_lint_builder/custom_lint_builder.dart';
+//.title
+// ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+//
+// Dart/Flutter (DF) Packages by dev-cetera.com & contributors. The use of this
+// source code is governed by an MIT-style license described in the LICENSE
+// file located in this project's root directory.
+//
+// See: https://opensource.org/license/mit
+//
+// ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+//.title~
 
-// TypeChecker to identify our new annotation.
-const _mustBeStronglyReferencedChecker = TypeChecker.fromName(
-  'MustBeStrongRefAnnotation',
-  packageName: 'df_safer_dart_annotations',
-);
+// ignore_for_file: deprecated_member_use
 
-class MustBeStronglyRefRule extends DartLintRule {
-  static const _code = LintCode(
-    name: 'must_be_strong_ref',
-    problemMessage: 'This parameter requires a variable that references a function.',
-    correctionMessage: 'Assign the function to a variable first, then pass the variable.',
-    errorSeverity: ErrorSeverity.WARNING,
+import '/_common.dart';
+
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+final class MustBeStronglyRefRule extends DartLintRule {
+  //
+  //
+  //
+
+  final String shortName;
+  final String longName;
+  final String packageName;
+
+  MustBeStronglyRefRule({
+    required super.code,
+    required this.shortName,
+    required this.longName,
+    required this.packageName,
+  });
+
+  late final _checker = TypeChecker.fromName(
+    longName,
+    packageName: packageName,
   );
 
-  const MustBeStronglyRefRule() : super(code: _code);
+  //
+  //
+  //
 
   @override
   void run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) {
@@ -28,27 +49,26 @@ class MustBeStronglyRefRule extends DartLintRule {
         final parameter = argument.staticParameterElement;
         if (parameter == null) continue;
 
-        // 1. Check if the parameter is annotated.
-        if (_mustBeStronglyReferencedChecker.hasAnnotationOf(parameter)) {
-          // 2. Check for violations.
-
+        if (_checker.hasAnnotationOf(parameter)) {
           // Violation: The argument is a function literal (e.g., `() => {}`).
           if (argument is FunctionExpression) {
-            reporter.atNode(argument, _code);
-            continue;
+            reporter.atNode(
+              argument,
+              code,
+            );
+            continue; // Go to the next argument
           }
-
           // Violation: The argument is an identifier, but it points directly
           // to a function or method, not a variable.
           if (argument is Identifier) {
             final element = argument.staticElement;
-
-            // `VariableElement` is the superclass for local variables, parameters,
-            // fields, and top-level variables. This is the "allowed" category.
-            // If the element is anything else (like a FunctionElement or MethodElement),
-            // it's a violation.
-            if (element is! VariableElement) {
-              reporter.atNode(argument, _code);
+            final isAllowedReference =
+                element is VariableElement || element is PropertyAccessorElement;
+            if (!isAllowedReference) {
+              reporter.atNode(
+                argument,
+                code,
+              );
             }
           }
         }

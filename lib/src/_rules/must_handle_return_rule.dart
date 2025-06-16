@@ -12,38 +12,33 @@
 
 // ignore_for_file: deprecated_member_use
 
-import 'package:analyzer/dart/ast/ast.dart';
-import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart' show VoidType, NeverType;
-import 'package:analyzer/error/error.dart' show ErrorSeverity;
-import 'package:analyzer/error/listener.dart';
-import 'package:custom_lint_builder/custom_lint_builder.dart';
+import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 @Deprecated('Use @useResult instead.')
-class MustHandleReturnRule extends DartLintRule {
+final class MustHandleReturnRule extends DartLintRule {
   //
   //
   //
 
-  static const _annotationChecker = TypeChecker.fromName(
-    'MustHandleReturnAnnotation',
-    packageName: 'df_safer_dart_annotations',
+  final String shortName;
+  final String longName;
+  final String packageName;
+
+  MustHandleReturnRule({
+    required super.code,
+    required this.shortName,
+    required this.longName,
+    required this.packageName,
+  });
+
+  late final _checker = TypeChecker.fromName(
+    longName,
+    packageName: packageName,
   );
 
-  static const _code = LintCode(
-    name: 'must_handle_return',
-    problemMessage: 'The return value of a function annotated with @mustHandleReturn must be used.',
-    correctionMessage: 'Assign the result to a variable, or use it in an expression.',
-    errorSeverity: ErrorSeverity.WARNING,
-  );
-
-  //
-  //
-  //
-
-  const MustHandleReturnRule() : super(code: _code);
+  
 
   //
   //
@@ -100,7 +95,7 @@ class MustHandleReturnRule extends DartLintRule {
     if (returnType is VoidType || returnType is NeverType) return;
 
     if (_hasMustHandleReturnAnnotation(element) && _isResultUnused(node)) {
-      reporter.atNode(node, _code);
+      reporter.atNode(node, code);
     }
   }
 
@@ -109,13 +104,13 @@ class MustHandleReturnRule extends DartLintRule {
   //
 
   bool _hasMustHandleReturnAnnotation(ExecutableElement element) {
-    if (_annotationChecker.hasAnnotationOf(element)) {
+    if (_checker.hasAnnotationOf(element)) {
       return true;
     }
 
     if (element is PropertyAccessorElement && element.isGetter) {
       final variable = element.variable2;
-      if (variable != null && _annotationChecker.hasAnnotationOf(variable)) {
+      if (variable != null && _checker.hasAnnotationOf(variable)) {
         return true;
       }
     }
