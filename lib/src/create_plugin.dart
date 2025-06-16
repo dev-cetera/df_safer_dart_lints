@@ -141,30 +141,30 @@ class _DfSaferDartLinter extends PluginBase {
       ),
 
       // MustUseMonad Rule - WE CAN ONLY GLOBALLY ACTIVATE ONE!
-      MustUseMonadRule(
-        code: const LintCode(
-          name: 'must_use_monad',
-          problemMessage: 'The result of this Monad should be used.',
-          correctionMessage:
-              'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
-          errorSeverity: ErrorSeverity.WARNING,
-        ),
-        shortName: 'Monad',
-        longName: 'Monad',
-        packageName: _MONAD_PACKAGE,
-      ),
       // MustUseMonadRule(
       //   code: const LintCode(
-      //     name: 'must_use_monad_or_error',
-      //     problemMessage: 'The result of this Monad must be used.',
+      //     name: 'must_use_monad',
+      //     problemMessage: 'The result of this Monad should be used.',
       //     correctionMessage:
       //         'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
-      //     errorSeverity: ErrorSeverity.ERROR,
+      //     errorSeverity: ErrorSeverity.WARNING,
       //   ),
       //   shortName: 'Monad',
       //   longName: 'Monad',
       //   packageName: _MONAD_PACKAGE,
       // ),
+      MustUseMonadRule(
+        code: const LintCode(
+          name: 'must_use_monad_or_error',
+          problemMessage: 'The result of this Monad must be used.',
+          correctionMessage:
+              'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
+          errorSeverity: ErrorSeverity.ERROR,
+        ),
+        shortName: 'Monad',
+        longName: 'Monad',
+        packageName: _MONAD_PACKAGE,
+      ),
 
       // NoFuturesAllowed Rule
       NoFuturesAllowedRule(
