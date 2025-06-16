@@ -129,13 +129,14 @@ class _UnawaitedFutureVisitor extends RecursiveAstVisitor<void> {
     if (parent is AwaitExpression) return true;
 
     // Handled if returned or used in a fat-arrow function.
-    if (parent is ReturnStatement || parent is ExpressionFunctionBody)
+    if (parent is ReturnStatement || parent is ExpressionFunctionBody) {
       return true;
+    }
 
     // Handled if assigned to a variable. THIS IS THE CORRECT TYPE.
-    if (parent is VariableDeclarationStatement ||
-        parent is AssignmentExpression)
+    if (parent is VariableDeclarationStatement || parent is AssignmentExpression) {
       return true;
+    }
 
     // Handled if passed as an argument.
     if (parent is ArgumentList) return true;
