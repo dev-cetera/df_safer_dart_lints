@@ -12,7 +12,8 @@
 
 import 'package:custom_lint_builder/custom_lint_builder.dart';
 
-import '/src/_must_handle_return_rule.dart';
+import '_rules/_rules.g.dart';
+import '_rules/must_be_strong_ref_rule.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
@@ -21,6 +22,13 @@ PluginBase createPlugin() => _DfSaferDartLinter();
 class _DfSaferDartLinter extends PluginBase {
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) {
-    return [const MustHandleReturnRule()];
+    return [
+      const AwaitAllFuturesRule(),
+      const MustBeAnonymousRule(),
+      const MustBeStronglyRefRule(),
+      const MustHandleReturnRule(),
+      const MustUseMonadRule(),
+      const NoFuturesAllowedRule(),
+    ];
   }
 }

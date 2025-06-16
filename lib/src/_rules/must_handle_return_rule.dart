@@ -21,6 +21,7 @@ import 'package:custom_lint_builder/custom_lint_builder.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
+@Deprecated('Use @useResult instead.')
 class MustHandleReturnRule extends DartLintRule {
   //
   //
