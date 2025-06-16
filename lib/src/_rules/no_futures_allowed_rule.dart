@@ -49,11 +49,7 @@ final class NoFuturesAllowedRule extends DartLintRule {
   ) {
     // Case 1: For named functions (top-level, methods, local functions)
     context.registry.addFunctionDeclaration((node) {
-      if (isDirectlyAnnotatedByText(
-        node,
-        shortName,
-        longName,
-      )) {
+      if (isDirectlyAnnotatedByText(node, shortName, longName)) {
         // Perform signature and body checks.
         _checkFunction(node.functionExpression, reporter, node);
       }
@@ -70,7 +66,11 @@ final class NoFuturesAllowedRule extends DartLintRule {
   }
 
   /// Performs all checks for a given function.
-  void _checkFunction(FunctionExpression node, ErrorReporter reporter, AstNode errorNode) {
+  void _checkFunction(
+    FunctionExpression node,
+    ErrorReporter reporter,
+    AstNode errorNode,
+  ) {
     // 1. Check for `async` keyword. This is the correct way.
     if (node.body.isAsynchronous) {
       reporter.atNode(errorNode, code);
@@ -101,10 +101,7 @@ class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
   //
   //
 
-  _NoFuturesVisitor({
-    required this.reporter,
-    required this.code,
-  });
+  _NoFuturesVisitor({required this.reporter, required this.code});
 
   //
   //
@@ -113,10 +110,7 @@ class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitAwaitExpression(AwaitExpression node) {
     // Violation: The `await` keyword is used.
-    reporter.atNode(
-      node,
-      code,
-    );
+    reporter.atNode(node, code);
     super.visitAwaitExpression(node);
   }
 

@@ -42,7 +42,11 @@ final class MustBeStronglyRefRule extends DartLintRule {
   //
 
   @override
-  void run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) {
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
     // We inspect arguments every time a function is called.
     context.registry.addArgumentList((node) {
       for (final argument in node.arguments) {
@@ -52,10 +56,7 @@ final class MustBeStronglyRefRule extends DartLintRule {
         if (_checker.hasAnnotationOf(parameter)) {
           // Violation: The argument is a function literal (e.g., `() => {}`).
           if (argument is FunctionExpression) {
-            reporter.atNode(
-              argument,
-              code,
-            );
+            reporter.atNode(argument, code);
             continue; // Go to the next argument
           }
           // Violation: The argument is an identifier, but it points directly
@@ -63,12 +64,10 @@ final class MustBeStronglyRefRule extends DartLintRule {
           if (argument is Identifier) {
             final element = argument.staticElement;
             final isAllowedReference =
-                element is VariableElement || element is PropertyAccessorElement;
+                element is VariableElement ||
+                element is PropertyAccessorElement;
             if (!isAllowedReference) {
-              reporter.atNode(
-                argument,
-                code,
-              );
+              reporter.atNode(argument, code);
             }
           }
         }

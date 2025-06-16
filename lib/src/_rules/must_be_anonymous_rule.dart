@@ -42,7 +42,11 @@ final class MustBeAnonymousRule extends DartLintRule {
   //
 
   @override
-  void run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) {
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
     // We want to inspect the arguments every time a function is called.
     // `addArgumentList` is the perfect hook for this.
     context.registry.addArgumentList((node) {

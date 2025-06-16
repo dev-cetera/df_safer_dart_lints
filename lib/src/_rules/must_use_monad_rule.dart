@@ -42,7 +42,11 @@ final class MustUseMonadRule extends DartLintRule {
   //
 
   @override
-  void run(CustomLintResolver resolver, ErrorReporter reporter, CustomLintContext context) {
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
     context.registry.addExpressionStatement((node) {
       final expression = node.expression;
 

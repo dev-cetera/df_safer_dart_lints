@@ -38,8 +38,6 @@ final class MustHandleReturnRule extends DartLintRule {
     packageName: packageName,
   );
 
-  
-
   //
   //
   //
@@ -123,7 +121,9 @@ final class MustHandleReturnRule extends DartLintRule {
 
   bool _isResultUnused(AstNode node) {
     // For identifiers, we need to check the parent to see if it's an invocation.
-    final nodeToCheck = node.parent is InvocationExpression ? node.parent! : node;
+    final nodeToCheck = node.parent is InvocationExpression
+        ? node.parent!
+        : node;
 
     var parent = nodeToCheck.parent;
     if (parent is CascadeExpression) return true;
