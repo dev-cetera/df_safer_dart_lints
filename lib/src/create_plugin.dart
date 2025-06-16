@@ -62,8 +62,7 @@ class _DfSaferDartLinter extends PluginBase {
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage:
-              'This parameter should receive an anonymous function.',
+          problemMessage: 'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
@@ -141,19 +140,19 @@ class _DfSaferDartLinter extends PluginBase {
         packageName: _ANNOTATIONS_PACKAGE,
       ),
 
-      // MustUseMonad Rule
-      MustUseMonadRule(
-        code: const LintCode(
-          name: 'must_use_monad',
-          problemMessage: 'The result of this Monad should be used.',
-          correctionMessage:
-              'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
-          errorSeverity: ErrorSeverity.WARNING,
-        ),
-        shortName: 'mustUseMonad',
-        longName: 'MustUseMonadAnnotation',
-        packageName: _MONAD_PACKAGE,
-      ),
+      // MustUseMonad Rule - WE CAN ONLY GLOBALLY ACTIVATE ONE!
+      // MustUseMonadRule(
+      //   code: const LintCode(
+      //     name: 'must_use_monad',
+      //     problemMessage: 'The result of this Monad should be used.',
+      //     correctionMessage:
+      //         'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
+      //     errorSeverity: ErrorSeverity.WARNING,
+      //   ),
+      //   shortName: 'Monad',
+      //   longName: 'Monad',
+      //   packageName: _MONAD_PACKAGE,
+      // ),
       MustUseMonadRule(
         code: const LintCode(
           name: 'must_use_monad_or_error',
@@ -162,8 +161,8 @@ class _DfSaferDartLinter extends PluginBase {
               'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
           errorSeverity: ErrorSeverity.ERROR,
         ),
-        shortName: 'mustUseMonadOrError',
-        longName: 'MustUseMonadOrErrorAnnotation',
+        shortName: 'Monad',
+        longName: 'Monad',
         packageName: _MONAD_PACKAGE,
       ),
 

@@ -12,7 +12,7 @@
 
 name: df_safer_dart_lints
 description: Lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotation package.
-version: 0.1.1
+version: 0.1.2
 
 ## -----------------------------------------------------------------------------
 

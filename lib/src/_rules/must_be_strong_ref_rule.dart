@@ -25,18 +25,20 @@ final class MustBeStronglyRefRule extends DartLintRule {
   final String longName;
   final String packageName;
 
+  late final _checker = TypeChecker.fromName(
+    longName,
+    packageName: packageName,
+  );
+
+  //
+  //
+  //
   MustBeStronglyRefRule({
     required super.code,
     required this.shortName,
     required this.longName,
     required this.packageName,
   });
-
-  late final _checker = TypeChecker.fromName(
-    longName,
-    packageName: packageName,
-  );
-
   //
   //
   //
@@ -64,8 +66,7 @@ final class MustBeStronglyRefRule extends DartLintRule {
           if (argument is Identifier) {
             final element = argument.staticElement;
             final isAllowedReference =
-                element is VariableElement ||
-                element is PropertyAccessorElement;
+                element is VariableElement || element is PropertyAccessorElement;
             if (!isAllowedReference) {
               reporter.atNode(argument, code);
             }

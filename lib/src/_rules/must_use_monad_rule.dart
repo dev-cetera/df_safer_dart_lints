@@ -25,17 +25,21 @@ final class MustUseMonadRule extends DartLintRule {
   final String longName;
   final String packageName;
 
+  late final _checker = TypeChecker.fromName(
+    longName,
+    packageName: packageName,
+  );
+
+  //
+  //
+  //
+
   MustUseMonadRule({
     required super.code,
     required this.shortName,
     required this.longName,
     required this.packageName,
   });
-
-  late final _checker = TypeChecker.fromName(
-    longName,
-    packageName: packageName,
-  );
 
   //
   //
