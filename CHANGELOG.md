@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.3]
+
+- Released @ 6/2025 (UTC)
+- chore: Activate must_use_monad_or_error rule
+
 ## [0.1.2]
 
 - Released @ 6/2025 (UTC)
