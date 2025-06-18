@@ -76,8 +76,8 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
         // Verify it's the top-level 'unsafe' function from our package.
         if (element is FunctionElement &&
             element.library.source.uri.toString().startsWith(
-                  'package:df_safer_dart',
-                )) {
+              'package:df_safer_dart',
+            )) {
           return true;
         }
       }
