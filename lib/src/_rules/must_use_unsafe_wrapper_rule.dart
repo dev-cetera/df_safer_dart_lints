@@ -75,11 +75,14 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
   bool _isInsideUnsafeWraooer(AstNode node) {
     var parent = node.parent;
     while (parent != null) {
-      if (parent is MethodInvocation && parent.methodName.name == unsafeWrapperName) {
+      if (parent is MethodInvocation &&
+          parent.methodName.name == unsafeWrapperName) {
         final element = parent.methodName.staticElement;
         // Verify it's the top-level 'unsafe' function from our package.
         if (element is FunctionElement &&
-            element.library.source.uri.toString().startsWith('package:$packageName')) {
+            element.library.source.uri.toString().startsWith(
+              'package:$packageName',
+            )) {
           return true;
         }
       }

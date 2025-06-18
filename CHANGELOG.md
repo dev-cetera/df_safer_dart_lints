@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.5]
+
+- Released @ 6/2025 (UTC)
+- feat: Add MustUseUnsafeWrapperRule
+
 ## [0.1.4]
 
 - Released @ 6/2025 (UTC)
