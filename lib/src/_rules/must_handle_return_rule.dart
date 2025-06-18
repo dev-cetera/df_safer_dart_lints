@@ -24,11 +24,10 @@ final class MustHandleReturnRule extends DartLintRule {
 
   final String shortName;
   final String longName;
-  final String packageName;
 
   late final _checker = TypeChecker.fromName(
     longName,
-    packageName: packageName,
+    packageName: 'df_safer_dart_annotations',
   );
 
   //
@@ -39,7 +38,6 @@ final class MustHandleReturnRule extends DartLintRule {
     required super.code,
     required this.shortName,
     required this.longName,
-    required this.packageName,
   });
 
   //
@@ -125,9 +123,7 @@ final class MustHandleReturnRule extends DartLintRule {
 
   bool _isResultUnused(AstNode node) {
     // For identifiers, we need to check the parent to see if it's an invocation.
-    final nodeToCheck = node.parent is InvocationExpression
-        ? node.parent!
-        : node;
+    final nodeToCheck = node.parent is InvocationExpression ? node.parent! : node;
 
     var parent = nodeToCheck.parent;
     if (parent is CascadeExpression) return true;

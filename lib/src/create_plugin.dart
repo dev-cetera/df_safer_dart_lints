@@ -22,13 +22,6 @@ class _DfSaferDartLinter extends PluginBase {
   //
   //
 
-  static const _ANNOTATIONS_PACKAGE = 'df_safer_dart_annotations';
-  static const _MONAD_PACKAGE = 'df_safer_dart';
-
-  //
-  //
-  //
-
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) {
     return [
@@ -43,7 +36,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustAwaitAllFutures',
         longName: 'MustAwaitAllFuturesAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
       AwaitAllFuturesRule(
         code: const LintCode(
@@ -55,22 +47,19 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustAwaitAllFuturesOrError',
         longName: 'MustAwaitAllFuturesOrErrorAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
 
       // MustBeAnonymous Rule
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage:
-              'This parameter should receive an anonymous function.',
+          problemMessage: 'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
         ),
         shortName: 'mustBeAnonymous',
         longName: 'MustBeAnonymousAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
       MustBeAnonymousRule(
         code: const LintCode(
@@ -82,7 +71,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustBeAnonymousOrError',
         longName: 'MustBeAnonymousOrErrorAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
 
       // MustBeStronglyRef Rule
@@ -97,7 +85,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustBeStrongRef',
         longName: 'MustBeStrongRefAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
       MustBeStronglyRefRule(
         code: const LintCode(
@@ -110,7 +97,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustBeStrongRefOrError',
         longName: 'MustBeStrongRefOrErrorAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
 
       // MustHandleReturn Rule
@@ -125,7 +111,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustHandleReturn',
         longName: 'MustHandleReturnAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
       // ignore: deprecated_member_use_from_same_package
       MustHandleReturnRule(
@@ -138,7 +123,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustHandleReturnOrError',
         longName: 'MustHandleReturnOrErrorAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
 
       // MustUseMonad Rule - WE CAN ONLY GLOBALLY ACTIVATE ONE!
@@ -152,7 +136,6 @@ class _DfSaferDartLinter extends PluginBase {
       //   ),
       //   shortName: 'Monad',
       //   longName: 'Monad',
-      //   packageName: _MONAD_PACKAGE,
       // ),
       MustUseMonadRule(
         code: const LintCode(
@@ -164,7 +147,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'Monad',
         longName: 'Monad',
-        packageName: _MONAD_PACKAGE,
       ),
 
       // NoFuturesAllowed Rule
@@ -178,7 +160,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'noFuturesAllowed',
         longName: 'NoFuturesAllowedAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
       NoFuturesAllowedRule(
         code: const LintCode(
@@ -190,7 +171,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'noFuturesAllowedOrError',
         longName: 'NoFuturesAllowedOrErrorAnnotation',
-        packageName: _ANNOTATIONS_PACKAGE,
       ),
       MustUseUnsafeWrapperRule(
         code: const LintCode(
@@ -202,8 +182,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'unsafe',
         longName: 'Unsafe',
-        packageName: _ANNOTATIONS_PACKAGE,
-        unsafeWrapperName: 'unsafe',
       ),
       MustUseUnsafeWrapperRule(
         code: const LintCode(
@@ -215,8 +193,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'unsafeOrError',
         longName: 'UnsafeOrError',
-        packageName: _ANNOTATIONS_PACKAGE,
-        unsafeWrapperName: 'unsafe',
       ),
     ];
   }

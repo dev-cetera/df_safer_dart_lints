@@ -23,11 +23,10 @@ final class AwaitAllFuturesRule extends DartLintRule {
 
   final String shortName;
   final String longName;
-  final String packageName;
 
   late final _checker = TypeChecker.fromName(
     longName,
-    packageName: packageName,
+    packageName: 'df_safer_dart_annotations',
   );
 
   //
@@ -38,7 +37,6 @@ final class AwaitAllFuturesRule extends DartLintRule {
     required super.code,
     required this.shortName,
     required this.longName,
-    required this.packageName,
   });
 
   //
@@ -138,8 +136,7 @@ class _UnawaitedFutureVisitor extends RecursiveAstVisitor<void> {
     }
 
     // Handled if assigned to a variable. THIS IS THE CORRECT TYPE.
-    if (parent is VariableDeclarationStatement ||
-        parent is AssignmentExpression) {
+    if (parent is VariableDeclarationStatement || parent is AssignmentExpression) {
       return true;
     }
 

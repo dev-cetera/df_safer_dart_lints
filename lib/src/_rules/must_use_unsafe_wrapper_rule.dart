@@ -23,12 +23,10 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
 
   final String shortName;
   final String longName;
-  final String packageName;
-  final String unsafeWrapperName;
 
   late final _checker = TypeChecker.fromName(
     longName,
-    packageName: packageName,
+    packageName: 'df_safer_dart_annotations',
   );
 
   //
@@ -39,8 +37,6 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     required super.code,
     required this.shortName,
     required this.longName,
-    required this.packageName,
-    required this.unsafeWrapperName,
   });
 
   //
@@ -75,14 +71,13 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
   bool _isInsideUnsafeWraooer(AstNode node) {
     var parent = node.parent;
     while (parent != null) {
-      if (parent is MethodInvocation &&
-          parent.methodName.name == unsafeWrapperName) {
+      if (parent is MethodInvocation && parent.methodName.name == 'unsafe') {
         final element = parent.methodName.staticElement;
         // Verify it's the top-level 'unsafe' function from our package.
         if (element is FunctionElement &&
             element.library.source.uri.toString().startsWith(
-              'package:$packageName',
-            )) {
+                  'package:df_safer_dart',
+                )) {
           return true;
         }
       }
