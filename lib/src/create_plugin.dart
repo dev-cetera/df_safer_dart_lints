@@ -62,8 +62,7 @@ class _DfSaferDartLinter extends PluginBase {
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage:
-              'This parameter should receive an anonymous function.',
+          problemMessage: 'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
@@ -191,6 +190,32 @@ class _DfSaferDartLinter extends PluginBase {
         shortName: 'noFuturesAllowedOrError',
         longName: 'NoFuturesAllowedOrErrorAnnotation',
         packageName: _ANNOTATIONS_PACKAGE,
+      ),
+      MustUseUnsafeWrapperRule(
+        code: const LintCode(
+          name: 'must_use_unsafe_wrapper',
+          problemMessage:
+              'Calls to methods annotated with @unsafe must be wrapped in an unsafe() block.',
+          correctionMessage: 'Wrap this call in unsafe(() => ...).',
+          errorSeverity: ErrorSeverity.WARNING,
+        ),
+        shortName: 'unsafe',
+        longName: 'Unsafe',
+        packageName: _ANNOTATIONS_PACKAGE,
+        unsafeWrapperName: 'unsafe',
+      ),
+      MustUseUnsafeWrapperRule(
+        code: const LintCode(
+          name: 'must_use_unsafe_wrapper_or_error',
+          problemMessage:
+              'Calls to methods annotated with @unsafeOrError must be wrapped in an unsafe() block.',
+          correctionMessage: 'Wrap this call in unsafe(() => ...).',
+          errorSeverity: ErrorSeverity.ERROR,
+        ),
+        shortName: 'unsafeOrError',
+        longName: 'UnsafeOrError',
+        packageName: _ANNOTATIONS_PACKAGE,
+        unsafeWrapperName: 'unsafe',
       ),
     ];
   }

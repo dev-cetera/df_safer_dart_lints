@@ -11,5 +11,6 @@ export './must_be_strong_ref_rule.dart';
 export './must_use_monad_rule.dart';
 export './must_be_anonymous_rule.dart';
 export './must_handle_return_rule.dart';
+export 'must_use_unsafe_wrapper_rule.dart';
 export './must_await_all_futures_rule.dart';
 export './no_futures_allowed_rule.dart';
