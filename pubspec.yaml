@@ -16,7 +16,7 @@ repository: https://github.com/robmllze/df_safer_dart_lints
 funding:
   - https://www.buymeacoffee.com/dev_cetera
 description: Lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotation package.
-version: 0.2.0
+version: 0.2.1
 
 ## -----------------------------------------------------------------------------
 
@@ -28,8 +28,8 @@ environment:
 dependencies:
   analyzer: ^7.4.5
   custom_lint_builder: ^0.7.5
-  df_safer_dart_annotations: ^0.1.5
-  df_safer_dart: ^0.14.10
+  df_safer_dart_annotations: ^0.1.6
+  df_safer_dart: ^0.15.0
 
 ## -----------------------------------------------------------------------------
 

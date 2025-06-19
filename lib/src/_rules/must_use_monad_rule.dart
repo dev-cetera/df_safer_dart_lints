@@ -21,11 +21,8 @@ final class MustUseMonadRule extends DartLintRule {
   //
   //
 
-  final String shortName;
-  final String longName;
-
-  late final _checker = TypeChecker.fromName(
-    longName,
+  final _checker = const TypeChecker.fromName(
+    'Monad',
     packageName: 'df_safer_dart',
   );
 
@@ -33,10 +30,8 @@ final class MustUseMonadRule extends DartLintRule {
   //
   //
 
-  MustUseMonadRule({
+  const MustUseMonadRule({
     required super.code,
-    required this.shortName,
-    required this.longName,
   });
 
   //

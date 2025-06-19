@@ -53,8 +53,7 @@ class _DfSaferDartLinter extends PluginBase {
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage:
-              'This parameter should receive an anonymous function.',
+          problemMessage: 'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
@@ -127,27 +126,23 @@ class _DfSaferDartLinter extends PluginBase {
       ),
 
       // MustUseMonad Rule - WE CAN ONLY GLOBALLY ACTIVATE ONE!
-      // MustUseMonadRule(
-      //   code: const LintCode(
+      //  const MustUseMonadRule(
+      //   code: LintCode(
       //     name: 'must_use_monad',
       //     problemMessage: 'The result of this Monad should be used.',
       //     correctionMessage:
       //         'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
       //     errorSeverity: ErrorSeverity.WARNING,
       //   ),
-      //   shortName: 'Monad',
-      //   longName: 'Monad',
       // ),
-      MustUseMonadRule(
-        code: const LintCode(
+      const MustUseMonadRule(
+        code: LintCode(
           name: 'must_use_monad_or_error',
           problemMessage: 'The result of this Monad must be used.',
           correctionMessage:
               'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
           errorSeverity: ErrorSeverity.ERROR,
         ),
-        shortName: 'Monad',
-        longName: 'Monad',
       ),
 
       // NoFuturesAllowed Rule
@@ -177,23 +172,21 @@ class _DfSaferDartLinter extends PluginBase {
         code: const LintCode(
           name: 'must_use_unsafe_wrapper',
           problemMessage:
-              'Calls to methods annotated with @unsafe must be wrapped in an unsafe() block.',
-          correctionMessage: 'Wrap this call in unsafe(() => ...).',
+              'Calls to methods annotated with @unsafe must be wrapped in an UNSAFE() block.',
+          correctionMessage: 'Wrap this call in UNSAFE(() => ...);',
           errorSeverity: ErrorSeverity.WARNING,
         ),
-        shortName: 'unsafe',
-        longName: 'Unsafe',
+        longName: 'UnsafeAnnotation',
       ),
       MustUseUnsafeWrapperRule(
         code: const LintCode(
           name: 'must_use_unsafe_wrapper_or_error',
           problemMessage:
-              'Calls to methods annotated with @unsafeOrError must be wrapped in an unsafe() block.',
-          correctionMessage: 'Wrap this call in unsafe(() => ...).',
+              'Calls to methods annotated with @unsafeOrError must be wrapped in an UNSAFE() block.',
+          correctionMessage: 'Wrap this call in UNSAFE(() => ...);',
           errorSeverity: ErrorSeverity.ERROR,
         ),
-        shortName: 'unsafeOrError',
-        longName: 'UnsafeOrError',
+        longName: 'UnsafeOrErrorAnnotation',
       ),
     ];
   }
