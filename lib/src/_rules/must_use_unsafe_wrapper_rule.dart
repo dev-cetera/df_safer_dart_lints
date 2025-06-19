@@ -32,10 +32,7 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
   //
   //
 
-  MustUseUnsafeWrapperRule({
-    required super.code,
-    required this.longName,
-  });
+  MustUseUnsafeWrapperRule({required super.code, required this.longName});
 
   //
   //
@@ -74,8 +71,8 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
         final element = parent.methodName.staticElement;
         if (element is FunctionElement &&
             element.library.source.uri.toString().startsWith(
-                  'package:df_safer_dart',
-                )) {
+              'package:df_safer_dart',
+            )) {
           return true;
         }
       }

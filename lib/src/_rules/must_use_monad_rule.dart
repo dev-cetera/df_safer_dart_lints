@@ -30,9 +30,7 @@ final class MustUseMonadRule extends DartLintRule {
   //
   //
 
-  const MustUseMonadRule({
-    required super.code,
-  });
+  const MustUseMonadRule({required super.code});
 
   //
   //
