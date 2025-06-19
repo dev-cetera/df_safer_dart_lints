@@ -63,21 +63,41 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
   //
   //
 
+  /// Checks if the given [node] is inside either an `UNSAFE` function call
+  /// or a labeled block named `UNSAFE:`.
   bool _isInsideUnsafeWrapper(AstNode node) {
     var parent = node.parent;
     while (parent != null) {
-      if (parent is MethodInvocation && parent.methodName.name == 'UNSAFE') {
-        // // Verify it's the top-level 'unsafe' function from our package.
-        final element = parent.methodName.staticElement;
-        if (element is FunctionElement &&
-            element.library.source.uri.toString().startsWith(
-              'package:df_safer_dart',
-            )) {
-          return true;
-        }
+      // Check if the current parent node is one of the valid wrappers.
+      if (_isUnsafeFunctionCall(parent) || _isUnsafeLabeledStatement(parent)) {
+        return true;
       }
+      // Move up the AST tree.
       parent = parent.parent;
     }
+
+    // If we reach the top of the tree, it's not inside a valid wrapper.
     return false;
+  }
+
+  /// Checks if the given [node] is a specific `UNSAFE()` function call from
+  /// the df_safer_dart package.
+  bool _isUnsafeFunctionCall(AstNode node) {
+    if (node is! MethodInvocation || node.methodName.name != 'UNSAFE') {
+      return false;
+    }
+
+    // Verify it's the top-level 'UNSAFE' function from our package.
+    final element = node.methodName.staticElement;
+    return element is FunctionElement &&
+        element.library.source.uri.toString().startsWith('package:df_safer_dart');
+  }
+
+  /// Checks if the given [node] is a LabeledStatement with a label named 'UNSAFE'.
+  bool _isUnsafeLabeledStatement(AstNode node) {
+    if (node is! LabeledStatement) {
+      return false;
+    }
+    return node.labels.any((label) => label.label.name == 'UNSAFE');
   }
 }
