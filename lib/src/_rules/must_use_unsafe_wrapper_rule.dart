@@ -90,7 +90,9 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     // Verify it's the top-level 'UNSAFE' function from our package.
     final element = node.methodName.staticElement;
     return element is FunctionElement &&
-        element.library.source.uri.toString().startsWith('package:df_safer_dart');
+        element.library.source.uri.toString().startsWith(
+          'package:df_safer_dart',
+        );
   }
 
   /// Checks if the given [node] is a LabeledStatement with a label named 'UNSAFE'.
