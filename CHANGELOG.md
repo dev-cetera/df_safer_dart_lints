@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.2]
+
+- Released @ 6/2025 (UTC)
+- Refactor rule code
+
 ## [0.3.1]
 
 - Released @ 6/2025 (UTC)

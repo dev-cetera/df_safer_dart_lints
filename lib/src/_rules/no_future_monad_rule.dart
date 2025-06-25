@@ -32,8 +32,9 @@ final class NoFutureMonadTypeRule extends DartLintRule {
     'Async',
   };
 
-  static final _monadCheckers =
-      _monadTypes.map((name) => TypeChecker.fromName(name, packageName: 'df_safer_dart')).toList();
+  static final _monadCheckers = _monadTypes
+      .map((name) => TypeChecker.fromName(name, packageName: 'df_safer_dart'))
+      .toList();
 
   const NoFutureMonadTypeRule({required super.code});
 
