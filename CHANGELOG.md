@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.1]
+
+- Released @ 6/2025 (UTC)
+- Add powerful no_future_monad_rule
+
 ## [0.3.0]
 
 - Released @ 6/2025 (UTC)
