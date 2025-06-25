@@ -11,7 +11,6 @@
 //.title~
 
 import '../_common.dart';
-import '_rules/_rules.g.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
@@ -21,6 +20,27 @@ class _DfSaferDartLinter extends PluginBase {
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) {
     return [
+      const MustUseMonadRule(
+        code: LintCode(
+          name: 'must_use_monad_or_error',
+          problemMessage: 'The result of this Monad must be used.',
+          correctionMessage:
+              'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
+          errorSeverity: ErrorSeverity.ERROR,
+        ),
+      ),
+
+      const NoFutureMonadsRule(
+        code: LintCode(
+          name: 'no_future_monads',
+          problemMessage:
+              'Avoid using Future/FutureOr Monad types. This can lead to unhandled errors and confusing type hierarchies.',
+          correctionMessage:
+              'Use `Resolvable`, `Async`, or `.toResolvable()` to represent asynchronous operations that return a Monad.',
+          errorSeverity: ErrorSeverity.ERROR,
+        ),
+      ),
+
       // AwaitAllFutures Rule
       AwaitAllFuturesRule(
         code: const LintCode(
@@ -49,8 +69,7 @@ class _DfSaferDartLinter extends PluginBase {
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage:
-              'This parameter should receive an anonymous function.',
+          problemMessage: 'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
@@ -120,26 +139,6 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         shortName: 'mustHandleReturnOrError',
         longName: 'MustHandleReturnOrErrorAnnotation',
-      ),
-
-      // MustUseMonad Rule - WE CAN ONLY GLOBALLY ACTIVATE ONE!
-      //  const MustUseMonadRule(
-      //   code: LintCode(
-      //     name: 'must_use_monad',
-      //     problemMessage: 'The result of this Monad should be used.',
-      //     correctionMessage:
-      //         'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
-      //     errorSeverity: ErrorSeverity.WARNING,
-      //   ),
-      // ),
-      const MustUseMonadRule(
-        code: LintCode(
-          name: 'must_use_monad_or_error',
-          problemMessage: 'The result of this Monad must be used.',
-          correctionMessage:
-              'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
-          errorSeverity: ErrorSeverity.ERROR,
-        ),
       ),
 
       // NoFuturesAllowed Rule
