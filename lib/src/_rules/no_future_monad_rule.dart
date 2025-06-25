@@ -18,7 +18,7 @@ import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class NoFutureMonadsRule extends DartLintRule {
+final class NoFutureMonadTypeRule extends DartLintRule {
   static const _monadTypes = {
     'Monad',
     'Option',
@@ -32,11 +32,10 @@ final class NoFutureMonadsRule extends DartLintRule {
     'Async',
   };
 
-  static final _monadCheckers = _monadTypes
-      .map((name) => TypeChecker.fromName(name, packageName: 'df_safer_dart'))
-      .toList();
+  static final _monadCheckers =
+      _monadTypes.map((name) => TypeChecker.fromName(name, packageName: 'df_safer_dart')).toList();
 
-  const NoFutureMonadsRule({required super.code});
+  const NoFutureMonadTypeRule({required super.code});
 
   @override
   void run(

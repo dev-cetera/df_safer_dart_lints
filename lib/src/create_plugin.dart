@@ -30,9 +30,9 @@ class _DfSaferDartLinter extends PluginBase {
         ),
       ),
 
-      const NoFutureMonadsRule(
+      const NoFutureMonadTypeRule(
         code: LintCode(
-          name: 'no_future_monads',
+          name: 'no_future_monad_type_or_error',
           problemMessage:
               'Avoid using Future/FutureOr Monad types. This can lead to unhandled errors and confusing type hierarchies.',
           correctionMessage:
@@ -69,8 +69,7 @@ class _DfSaferDartLinter extends PluginBase {
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage:
-              'This parameter should receive an anonymous function.',
+          problemMessage: 'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
