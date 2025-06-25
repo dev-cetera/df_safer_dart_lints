@@ -49,7 +49,8 @@ class _DfSaferDartLinter extends PluginBase {
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage: 'This parameter should receive an anonymous function.',
+          problemMessage:
+              'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
