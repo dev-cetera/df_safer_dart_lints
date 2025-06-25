@@ -10,12 +10,13 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-import 'package:analyzer/dart/ast/ast.dart' show Declaration;
+import 'package:analyzer/dart/ast/ast.dart' show AnnotatedNode;
+import 'package:analyzer/dart/element/type.dart' show DartType;
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 bool isDirectlyAnnotatedByText(
-  Declaration node,
+  AnnotatedNode node,
   String shortName,
   String longName,
 ) {
@@ -26,4 +27,8 @@ bool isDirectlyAnnotatedByText(
     }
   }
   return false;
+}
+
+bool isFutureOrFutureOr(DartType? type) {
+  return type != null && (type.isDartAsyncFuture || type.isDartAsyncFutureOr);
 }

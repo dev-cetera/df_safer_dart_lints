@@ -12,15 +12,13 @@
 
 // ignore_for_file: deprecated_member_use
 
+import 'package:analyzer/dart/element/type.dart' show DartType;
+
 import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class NoFuturesAllowedRule extends DartLintRule {
-  //
-  //
-  //
-
+final class NoFuturesRule extends DartLintRule {
   final String shortName;
   final String longName;
 
@@ -29,19 +27,11 @@ final class NoFuturesAllowedRule extends DartLintRule {
     packageName: 'df_safer_dart_annotations',
   );
 
-  //
-  //
-  //
-
-  NoFuturesAllowedRule({
+  NoFuturesRule({
     required super.code,
     required this.shortName,
     required this.longName,
   });
-
-  //
-  //
-  //
 
   @override
   void run(
@@ -49,103 +39,112 @@ final class NoFuturesAllowedRule extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    // Case 1: For named functions (top-level, methods, local functions)
     context.registry.addFunctionDeclaration((node) {
       if (isDirectlyAnnotatedByText(node, shortName, longName)) {
-        // Perform signature and body checks.
         _checkFunction(node.functionExpression, reporter, node);
       }
     });
 
-    // Case 2: For anonymous functions passed as arguments
     context.registry.addFunctionExpression((node) {
+      if (node.parent is FunctionDeclaration) return;
+
       final paramElement = node.staticParameterElement;
       if (paramElement != null && _checker.hasAnnotationOf(paramElement)) {
-        // Perform signature and body checks.
         _checkFunction(node, reporter, node);
       }
     });
   }
 
-  /// Performs all checks for a given function.
   void _checkFunction(
     FunctionExpression node,
     ErrorReporter reporter,
     AstNode errorNode,
   ) {
-    // 1. Check for `async` keyword. This is the correct way.
     if (node.body.isAsynchronous) {
-      reporter.atNode(errorNode, code);
+      reporter.atNode(errorNode, code, arguments: [shortName]);
     }
-
-    // 2. Check the function's return type.
     final returnType = node.declaredElement?.returnType;
-    if (returnType != null && returnType.isDartAsyncFuture) {
-      reporter.atNode(errorNode, code);
+    if (_isFutureOrFutureOr(returnType)) {
+      reporter.atNode(errorNode, code, arguments: [shortName]);
     }
-
-    // 3. Visit the function body to find any other Future usage.
     node.body.accept(_NoFuturesVisitor(reporter: reporter, code: code));
   }
+}
+
+bool _isFutureOrFutureOr(DartType? type) {
+  return type != null && (type.isDartAsyncFuture || type.isDartAsyncFutureOr);
 }
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
-  //
-  //
-  //
-
   final ErrorReporter reporter;
   final LintCode code;
 
-  //
-  //
-  //
+  int _safeContextDepth = 0;
+  bool get _isInSafeContext => _safeContextDepth > 0;
+
+  static final _asyncChecker = const TypeChecker.fromName(
+    'Async',
+    packageName: 'df_safer_dart',
+  );
+
+  static final _resolvableChecker = const TypeChecker.fromName(
+    'Resolvable',
+    packageName: 'df_safer_dart',
+  );
 
   _NoFuturesVisitor({required this.reporter, required this.code});
 
-  //
-  //
-  //
+  void _check(Expression node) {
+    if (_isInSafeContext) return;
+    if (_isFutureOrFutureOr(node.staticType)) {
+      reporter.atNode(node, code);
+    }
+  }
 
   @override
   void visitAwaitExpression(AwaitExpression node) {
-    // Violation: The `await` keyword is used.
-    reporter.atNode(node, code);
+    if (!_isInSafeContext) {
+      reporter.atNode(node, code);
+    }
     super.visitAwaitExpression(node);
   }
 
-  //
-  //
-  //
+  @override
+  void visitFunctionExpression(FunctionExpression node) {
+    if (node.body.isAsynchronous && !_isInSafeContext) {
+      reporter.atNode(node.body, code);
+    }
+    if (_isFutureOrFutureOr(node.declaredElement?.returnType) && !_isInSafeContext) {
+      reporter.atNode(node, code);
+    }
+    super.visitFunctionExpression(node);
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    final type = node.staticType;
+    if (type != null &&
+        (_asyncChecker.isExactlyType(type) || _resolvableChecker.isExactlyType(type))) {
+      _safeContextDepth++;
+      super.visitInstanceCreationExpression(node);
+      _safeContextDepth--;
+    } else {
+      _check(node);
+      super.visitInstanceCreationExpression(node);
+    }
+  }
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
-    // Violation: A method is called that returns a Future.
     _check(node);
     super.visitMethodInvocation(node);
   }
 
-  //
-  //
-  //
-
   @override
-  void visitInstanceCreationExpression(InstanceCreationExpression node) {
-    // Violation: An object is instantiated that is a Future.
+  void visitFunctionExpressionInvocation(FunctionExpressionInvocation node) {
     _check(node);
-    super.visitInstanceCreationExpression(node);
-  }
-
-  //
-  //
-  //
-
-  void _check(Expression node) {
-    // If any expression's type is a Future, it's a violation.
-    if (node.staticType?.isDartAsyncFuture ?? false) {
-      reporter.atNode(node, code);
-    }
+    super.visitFunctionExpressionInvocation(node);
   }
 }

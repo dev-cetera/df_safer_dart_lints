@@ -17,10 +17,6 @@ import '/_common.dart';
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 final class MustUseUnsafeWrapperRule extends DartLintRule {
-  //
-  //
-  //
-
   final String longName;
 
   late final _checker = TypeChecker.fromName(
@@ -28,15 +24,7 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     packageName: 'df_safer_dart_annotations',
   );
 
-  //
-  //
-  //
-
   MustUseUnsafeWrapperRule({required super.code, required this.longName});
-
-  //
-  //
-  //
 
   @override
   void run(
@@ -59,29 +47,17 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     });
   }
 
-  //
-  //
-  //
-
-  /// Checks if the given [node] is inside either an `UNSAFE` function call
-  /// or a labeled block named `UNSAFE:`.
   bool _isInsideUnsafeWrapper(AstNode node) {
     var parent = node.parent;
     while (parent != null) {
-      // Check if the current parent node is one of the valid wrappers.
       if (_isUnsafeFunctionCall(parent) || _isUnsafeLabeledStatement(parent)) {
         return true;
       }
-      // Move up the AST tree.
       parent = parent.parent;
     }
-
-    // If we reach the top of the tree, it's not inside a valid wrapper.
     return false;
   }
 
-  /// Checks if the given [node] is a specific `UNSAFE()` function call from
-  /// the df_safer_dart package.
   bool _isUnsafeFunctionCall(AstNode node) {
     if (node is! MethodInvocation || node.methodName.name != 'UNSAFE') {
       return false;
@@ -91,11 +67,10 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     final element = node.methodName.staticElement;
     return element is FunctionElement &&
         element.library.source.uri.toString().startsWith(
-          'package:df_safer_dart',
-        );
+              'package:df_safer_dart',
+            );
   }
 
-  /// Checks if the given [node] is a LabeledStatement with a label named 'UNSAFE'.
   bool _isUnsafeLabeledStatement(AstNode node) {
     if (node is! LabeledStatement) {
       return false;

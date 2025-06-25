@@ -17,10 +17,6 @@ import '/_common.dart';
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 final class MustBeStronglyRefRule extends DartLintRule {
-  //
-  //
-  //
-
   final String shortName;
   final String longName;
 
@@ -29,17 +25,11 @@ final class MustBeStronglyRefRule extends DartLintRule {
     packageName: 'df_safer_dart_annotations',
   );
 
-  //
-  //
-  //
   MustBeStronglyRefRule({
     required super.code,
     required this.shortName,
     required this.longName,
   });
-  //
-  //
-  //
 
   @override
   void run(
@@ -47,25 +37,20 @@ final class MustBeStronglyRefRule extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
-    // We inspect arguments every time a function is called.
     context.registry.addArgumentList((node) {
       for (final argument in node.arguments) {
         final parameter = argument.staticParameterElement;
         if (parameter == null) continue;
 
         if (_checker.hasAnnotationOf(parameter)) {
-          // Violation: The argument is a function literal (e.g., `() => {}`).
           if (argument is FunctionExpression) {
             reporter.atNode(argument, code);
-            continue; // Go to the next argument
+            continue;
           }
-          // Violation: The argument is an identifier, but it points directly
-          // to a function or method, not a variable.
           if (argument is Identifier) {
             final element = argument.staticElement;
             final isAllowedReference =
-                element is VariableElement ||
-                element is PropertyAccessorElement;
+                element is VariableElement || element is PropertyAccessorElement;
             if (!isAllowedReference) {
               reporter.atNode(argument, code);
             }

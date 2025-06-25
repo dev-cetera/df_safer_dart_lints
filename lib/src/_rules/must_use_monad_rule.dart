@@ -17,24 +17,12 @@ import '/_common.dart';
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 final class MustUseMonadRule extends DartLintRule {
-  //
-  //
-  //
-
   final _checker = const TypeChecker.fromName(
     'Monad',
     packageName: 'df_safer_dart',
   );
 
-  //
-  //
-  //
-
   const MustUseMonadRule({required super.code});
-
-  //
-  //
-  //
 
   @override
   void run(

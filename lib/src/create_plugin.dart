@@ -18,10 +18,6 @@ import '_rules/_rules.g.dart';
 PluginBase createPlugin() => _DfSaferDartLinter();
 
 class _DfSaferDartLinter extends PluginBase {
-  //
-  //
-  //
-
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) {
     return [
@@ -53,8 +49,7 @@ class _DfSaferDartLinter extends PluginBase {
       MustBeAnonymousRule(
         code: const LintCode(
           name: 'must_be_anonymous',
-          problemMessage:
-              'This parameter should receive an anonymous function.',
+          problemMessage: 'This parameter should receive an anonymous function.',
           correctionMessage:
               'Instead of passing a named function, pass a closure like `() { ... }`.',
           errorSeverity: ErrorSeverity.WARNING,
@@ -147,27 +142,27 @@ class _DfSaferDartLinter extends PluginBase {
       ),
 
       // NoFuturesAllowed Rule
-      NoFuturesAllowedRule(
+      NoFuturesRule(
         code: const LintCode(
-          name: 'no_futures_allowed',
-          problemMessage: 'This function should not contain any Futures.',
+          name: 'no_futures',
+          problemMessage: 'Your function should not contain any Futures.',
           correctionMessage:
               'Refactor to remove `async`/`await` keywords and any functions that return a Future.',
           errorSeverity: ErrorSeverity.WARNING,
         ),
-        shortName: 'noFuturesAllowed',
-        longName: 'NoFuturesAllowedAnnotation',
+        shortName: 'noFutures',
+        longName: 'NoFuturesAnnotation',
       ),
-      NoFuturesAllowedRule(
+      NoFuturesRule(
         code: const LintCode(
-          name: 'no_futures_allowed_or_error',
-          problemMessage: 'This function should not contain any Futures.',
+          name: 'no_futures_or_error',
+          problemMessage: 'Your function should not contain any Futures.',
           correctionMessage:
               'Refactor to remove `async`/`await` keywords and any functions that return a Future.',
           errorSeverity: ErrorSeverity.ERROR,
         ),
-        shortName: 'noFuturesAllowedOrError',
-        longName: 'NoFuturesAllowedOrErrorAnnotation',
+        shortName: 'noFuturesOrError',
+        longName: 'NoFuturesOrErrorAnnotation',
       ),
       MustUseUnsafeWrapperRule(
         code: const LintCode(
