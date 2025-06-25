@@ -4,7 +4,6 @@
 
 - Released @ 6/2025 (UTC)
 - Fix some bugs
-- Add powerful no_future_monad_rule
 
 ## [0.2.3]
 
