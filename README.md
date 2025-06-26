@@ -3,8 +3,10 @@
 
 Dart & Flutter Packages by dev-cetera.com & contributors.
 
+[![sponsor](https://img.shields.io/badge/sponsor-grey?logo=github-sponsors)](https://github.com/sponsors/dev-cetera)
+[![patreon](https://img.shields.io/badge/patreon-grey?logo=patreon)](https://www.patreon.com/c/RobertMollentze)
 [![pub](https://img.shields.io/pub/v/df_safer_dart_lints.svg)](https://pub.dev/packages/df_safer_dart_lints)
-[![tag](https://img.shields.io/badge/tag-v0.3.2-purple)](https://github.com/dev-cetera/df_safer_dart_lints/tree/v0.3.2)
+[![tag](https://img.shields.io/badge/tag-v0.3.2-purple?logo=github)](https://github.com/dev-cetera/df_safer_dart_lints/tree/v0.3.2)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dev-cetera/df_safer_dart_lints/main/LICENSE)
 
 ---
@@ -47,3 +49,4 @@ If you're enjoying this package and find it valuable, consider showing your appr
 ## 🧑‍⚖️ License
 
 This project is released under the [MIT License](https://raw.githubusercontent.com/dev-cetera/df_safer_dart_lints/main/LICENSE). See [LICENSE](https://raw.githubusercontent.com/dev-cetera/df_safer_dart_lints/main/LICENSE) for more information.
+
