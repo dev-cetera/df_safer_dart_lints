@@ -93,9 +93,17 @@ Set<_VersionSection> extractSections(String contents) {
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 class _VersionSection {
+  //
+  //
+  //
+
   String version;
   DateTime releasedAt;
   Set<String> updates;
+
+  //
+  //
+  //
 
   _VersionSection({
     required this.version,
@@ -103,10 +111,18 @@ class _VersionSection {
     Set<String>? updates,
   }) : updates = updates ?? {};
 
+  //
+  //
+  //
+
   void addUpdate(String update) {
     updates.add(update);
     releasedAt = DateTime.now().toUtc();
   }
+
+  //
+  //
+  //
 
   @override
   String toString() {
