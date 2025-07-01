@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.3]
+
+- Released @ 7/2025 (UTC)
+- Refactor lint names
+
 ## [0.3.2]
 
 - Released @ 6/2025 (UTC)
