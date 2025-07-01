@@ -20,23 +20,23 @@ class _DfSaferDartLinter extends PluginBase {
   @override
   List<LintRule> getLintRules(CustomLintConfigs configs) {
     return [
-      const MustUseMonadRule(
+      const MustUseOutcomeRule(
         code: LintCode(
-          name: 'must_use_monad_or_error',
-          problemMessage: 'The result of this Monad must be used.',
+          name: 'must_use_outcome_or_error',
+          problemMessage: 'The result of this Outcome must be used.',
           correctionMessage:
-              'Handle the Monad by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
+              'Handle the Outcome by assigning it to a variable, using it in a chain (e.g., `.map()`), or call `.end()` to explicitly discard the result.',
           errorSeverity: ErrorSeverity.ERROR,
         ),
       ),
 
-      const NoFutureMonadTypeRule(
+      const NoFutureOutcomeTypeRule(
         code: LintCode(
-          name: 'no_future_monad_type_or_error',
+          name: 'no_future_outcome_type_or_error',
           problemMessage:
-              'Avoid using Future/FutureOr Monad types. This can lead to unhandled errors and confusing type hierarchies.',
+              'Avoid using Future/FutureOr Outcome types. This can lead to unhandled errors and confusing type hierarchies.',
           correctionMessage:
-              'Use `Resolvable`, `Async`, or `.toResolvable()` to represent asynchronous operations that return a Monad.',
+              'Use `Resolvable`, `Async`, or `.toResolvable()` to represent asynchronous operations that return a Outcome.',
           errorSeverity: ErrorSeverity.ERROR,
         ),
       ),

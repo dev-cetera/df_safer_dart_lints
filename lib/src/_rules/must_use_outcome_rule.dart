@@ -16,13 +16,13 @@ import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class MustUseMonadRule extends DartLintRule {
+final class MustUseOutcomeRule extends DartLintRule {
   final _checker = const TypeChecker.fromName(
-    'Monad',
+    'Outcome',
     packageName: 'df_safer_dart',
   );
 
-  const MustUseMonadRule({required super.code});
+  const MustUseOutcomeRule({required super.code});
 
   @override
   void run(

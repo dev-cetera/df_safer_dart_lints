@@ -1,4 +1,4 @@
-// lib/src/_rules/avoid_nested_futures_in_monads_rule.dart
+// lib/src/_rules/avoid_nested_futures_in_outcomes_rule.dart
 
 //.title
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
@@ -18,9 +18,9 @@ import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class NoFutureMonadTypeRule extends DartLintRule {
-  static const _monadTypes = {
-    'Monad',
+final class NoFutureOutcomeTypeRule extends DartLintRule {
+  static const _outcomeTypes = {
+    'Outcome',
     'Option',
     'Some',
     'None',
@@ -32,11 +32,11 @@ final class NoFutureMonadTypeRule extends DartLintRule {
     'Async',
   };
 
-  static final _monadCheckers = _monadTypes
+  static final _outcomeCheckers = _outcomeTypes
       .map((name) => TypeChecker.fromName(name, packageName: 'df_safer_dart'))
       .toList();
 
-  const NoFutureMonadTypeRule({required super.code});
+  const NoFutureOutcomeTypeRule({required super.code});
 
   @override
   void run(
@@ -51,13 +51,13 @@ final class NoFutureMonadTypeRule extends DartLintRule {
       if (_isFutureOrFutureOr(type)) {
         if (type is ParameterizedType && type.typeArguments.isNotEmpty) {
           final innerType = type.typeArguments.first;
-          if (_isMonad(innerType)) {
+          if (_isOutcome(innerType)) {
             reporter.atNode(node, code);
           }
         }
       }
 
-      if (_isMonad(type)) {
+      if (_isOutcome(type)) {
         if (type is ParameterizedType && type.typeArguments.isNotEmpty) {
           final innerType = type.typeArguments.first;
           if (_isFutureOrFutureOr(innerType)) {
@@ -72,8 +72,8 @@ final class NoFutureMonadTypeRule extends DartLintRule {
     return type.isDartAsyncFuture || type.isDartAsyncFutureOr;
   }
 
-  bool _isMonad(DartType type) {
-    for (final checker in _monadCheckers) {
+  bool _isOutcome(DartType type) {
+    for (final checker in _outcomeCheckers) {
       if (checker.isExactlyType(type)) {
         return true;
       }
