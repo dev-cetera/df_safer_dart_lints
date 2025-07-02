@@ -11,6 +11,8 @@ Dart & Flutter Packages by dev-cetera.com & contributors.
 
 ---
 
+[![banner](https://github.com/dev-cetera/df_safer_dart/blob/v0.3.3/doc/assets/banner.png?raw=true)](https://github.com/dev-cetera)
+
 <!-- BEGIN _README_CONTENT -->
 
 Custom lints for the [df_safer_dart](https://pub.dev/packages/df_safer_dart) package.
@@ -49,3 +51,4 @@ If you're enjoying this package and find it valuable, consider showing your appr
 ## 🧑‍⚖️ License
 
 This project is released under the [MIT License](https://raw.githubusercontent.com/dev-cetera/df_safer_dart_lints/main/LICENSE). See [LICENSE](https://raw.githubusercontent.com/dev-cetera/df_safer_dart_lints/main/LICENSE) for more information.
+

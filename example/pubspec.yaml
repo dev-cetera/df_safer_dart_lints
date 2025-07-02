@@ -1,4 +1,10 @@
 name: df_safer_dart_lints_example
+homepage: https://dev-cetera.com/
+repository: https://github.com/robmllze/df_safer_dart_lints
+funding:
+- https://www.buymeacoffee.com/dev_cetera
+- https://www.patreon.com/c/RobertMollentze
+- https://github.com/sponsors/robmllze
 environment:
   sdk: ">=3.5.0 <4.0.0"
 dependencies:
