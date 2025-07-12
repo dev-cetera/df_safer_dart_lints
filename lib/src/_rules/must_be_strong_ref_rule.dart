@@ -1,9 +1,10 @@
 //.title
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //
-// Dart/Flutter (DF) Packages by dev-cetera.com & contributors. The use of this
-// source code is governed by an MIT-style license described in the LICENSE
-// file located in this project's root directory.
+// Copyright © dev-cetera.com & contributors.
+//
+// The use of this source code is governed by an MIT-style license described in
+// the LICENSE file located in this project's root directory.
 //
 // See: https://opensource.org/license/mit
 //
@@ -50,8 +51,7 @@ final class MustBeStronglyRefRule extends DartLintRule {
           if (argument is Identifier) {
             final element = argument.staticElement;
             final isAllowedReference =
-                element is VariableElement ||
-                element is PropertyAccessorElement;
+                element is VariableElement || element is PropertyAccessorElement;
             if (!isAllowedReference) {
               reporter.atNode(argument, code);
             }

@@ -1,9 +1,10 @@
 //.title
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //
-// Dart/Flutter (DF) Packages by dev-cetera.com & contributors. The use of this
-// source code is governed by an MIT-style license described in the LICENSE
-// file located in this project's root directory.
+// Copyright © dev-cetera.com & contributors.
+//
+// The use of this source code is governed by an MIT-style license described in
+// the LICENSE file located in this project's root directory.
 //
 // See: https://opensource.org/license/mit
 //
@@ -89,9 +90,7 @@ final class MustHandleReturnRule extends DartLintRule {
   }
 
   bool _isResultUnused(AstNode node) {
-    final nodeToCheck = node.parent is InvocationExpression
-        ? node.parent!
-        : node;
+    final nodeToCheck = node.parent is InvocationExpression ? node.parent! : node;
     var parent = nodeToCheck.parent;
     if (parent is CascadeExpression) return true;
     while (parent != null) {
