@@ -1,7 +1,7 @@
-[![banner](https://github.com/dev-cetera/df_safer_dart_lints/blob/v0.3.3/doc/assets/banner.png?raw=true)](https://github.com/dev-cetera)
+[![banner](https://github.com/dev-cetera/df_safer_dart_lints/blob/v0.3.4/doc/assets/banner.png?raw=true)](https://github.com/dev-cetera)
 
 [![pub](https://img.shields.io/pub/v/df_safer_dart_lints.svg)](https://pub.dev/packages/df_safer_dart_lints)
-[![tag](https://img.shields.io/badge/Tag-v0.3.3-purple?logo=github)](https://github.com/dev-cetera/df_safer_dart_lints/tree/v0.3.3)
+[![tag](https://img.shields.io/badge/Tag-v0.3.4-purple?logo=github)](https://github.com/dev-cetera/df_safer_dart_lints/tree/v0.3.4)
 [![buymeacoffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dev_cetera)
 [![sponsor](https://img.shields.io/badge/Sponsor-grey?logo=github-sponsors&logoColor=pink)](https://github.com/sponsors/dev-cetera)
 [![patreon](https://img.shields.io/badge/Patreon-grey?logo=patreon)](https://www.patreon.com/robelator)

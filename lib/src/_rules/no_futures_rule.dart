@@ -115,7 +115,8 @@ class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
     if (node.body.isAsynchronous && !_isInSafeContext) {
       reporter.atNode(node.body, code);
     }
-    if (_isFutureOrFutureOr(node.declaredElement?.returnType) && !_isInSafeContext) {
+    if (_isFutureOrFutureOr(node.declaredElement?.returnType) &&
+        !_isInSafeContext) {
       reporter.atNode(node, code);
     }
     super.visitFunctionExpression(node);
@@ -125,7 +126,8 @@ class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
     final type = node.staticType;
     if (type != null &&
-        (_asyncChecker.isExactlyType(type) || _resolvableChecker.isExactlyType(type))) {
+        (_asyncChecker.isExactlyType(type) ||
+            _resolvableChecker.isExactlyType(type))) {
       _safeContextDepth++;
       super.visitInstanceCreationExpression(node);
       _safeContextDepth--;

@@ -68,8 +68,8 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     final element = node.methodName.staticElement;
     return element is FunctionElement &&
         element.library.source.uri.toString().startsWith(
-              'package:df_safer_dart',
-            );
+          'package:df_safer_dart',
+        );
   }
 
   bool _isUnsafeLabeledStatement(AstNode node) {

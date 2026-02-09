@@ -51,7 +51,8 @@ final class MustBeStronglyRefRule extends DartLintRule {
           if (argument is Identifier) {
             final element = argument.staticElement;
             final isAllowedReference =
-                element is VariableElement || element is PropertyAccessorElement;
+                element is VariableElement ||
+                element is PropertyAccessorElement;
             if (!isAllowedReference) {
               reporter.atNode(argument, code);
             }
