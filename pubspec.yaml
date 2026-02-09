@@ -13,13 +13,15 @@
 
 name: df_safer_dart_lints
 homepage: https://dev-cetera.com/
-repository: https://github.com/robmllze/df_safer_dart_lints
 funding:
 - https://www.buymeacoffee.com/dev_cetera
-- https://www.patreon.com/c/RobertMollentze
-- https://github.com/sponsors/robmllze
+- https://www.patreon.com/c/robelator
+- https://github.com/sponsors/robelator
+- https://www.patreon.com/c/robelator
+- https://github.com/sponsors/robelator
+- https://www.buymeacoffee.com/dev_cetera
 description: Lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotation package.
-version: 0.3.3
+version: 0.3.4
 
 ## -----------------------------------------------------------------------------
 
