@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-
 import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -39,29 +38,27 @@ final class MustBeStronglyRefRule extends DartLintRule {
   ) {
     context.registry.addArgumentList((node) {
       for (final argument in node.arguments) {
-        final parameter = argument.staticParameterElement;
+        final parameter = argument.correspondingParameter;
         if (parameter == null) continue;
 
         if (!_checker.hasAnnotationOf(parameter)) continue;
 
-        final inner = argument is NamedExpression
-            ? argument.expression
-            : argument;
+        final inner =
+            argument is NamedExpression ? argument.expression : argument;
         if (inner is FunctionExpression) {
           reporter.atNode(inner, code);
           continue;
         }
         if (inner is Identifier) {
-          final element = inner.staticElement;
+          final element = inner.element;
           // Allowed strong references:
-          //  * VariableElement      — `final f = ...; pass(f);`
-          //  * PropertyAccessorElement — `pass(obj.f);` (stored callable)
-          //  * FunctionElement (top-level) — program-lifetime, by definition.
+          //  * VariableElement     — `final f = ...; pass(f);`
+          //  * GetterElement        — `pass(obj.f);` (stored callable read)
+          //  * TopLevelFunctionElement — program-lifetime, by definition.
           //  * MethodElement on a static context — class-lifetime.
-          final isAllowedReference =
-              element is VariableElement ||
-              element is PropertyAccessorElement ||
-              element is FunctionElement ||
+          final isAllowedReference = element is VariableElement ||
+              element is GetterElement ||
+              element is TopLevelFunctionElement ||
               (element is MethodElement && element.isStatic);
           if (!isAllowedReference) {
             reporter.atNode(inner, code);

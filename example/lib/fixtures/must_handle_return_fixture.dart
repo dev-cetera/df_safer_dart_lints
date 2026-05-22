@@ -4,7 +4,6 @@
 
 // Fixture for `must_handle_return` / `must_handle_return_or_error`.
 
-
 import 'package:df_safer_dart_annotations/df_safer_dart_annotations.dart';
 
 @mustHandleReturnOrError

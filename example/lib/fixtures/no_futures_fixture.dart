@@ -9,7 +9,6 @@
 // expression. `expect_lint` is matched per-line, not per-fire — one marker
 // per offending source line is enough.
 
-
 import 'package:df_safer_dart_annotations/df_safer_dart_annotations.dart';
 
 // expect_lint: no_futures_or_error

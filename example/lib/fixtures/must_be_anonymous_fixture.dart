@@ -4,7 +4,6 @@
 
 // Fixture for `must_be_anonymous` / `must_be_anonymous_or_error`.
 
-
 import 'package:df_safer_dart_annotations/df_safer_dart_annotations.dart';
 
 void takesAnonymousOrError(@mustBeAnonymousOrError void Function() block) {
