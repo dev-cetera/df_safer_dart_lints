@@ -118,7 +118,6 @@ class _DfSaferDartLinter extends PluginBase {
       ),
 
       // MustHandleReturn Rule
-      // ignore: deprecated_member_use_from_same_package
       MustHandleReturnRule(
         code: const LintCode(
           name: 'must_handle_return',
@@ -130,7 +129,6 @@ class _DfSaferDartLinter extends PluginBase {
         shortName: 'mustHandleReturn',
         longName: 'MustHandleReturnAnnotation',
       ),
-      // ignore: deprecated_member_use_from_same_package
       MustHandleReturnRule(
         code: const LintCode(
           name: 'must_handle_return_or_error',

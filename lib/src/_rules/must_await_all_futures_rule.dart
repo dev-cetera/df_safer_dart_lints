@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-// ignore_for_file: deprecated_member_use
 
 import '/_common.dart';
 
@@ -41,6 +40,13 @@ final class AwaitAllFuturesRule extends DartLintRule {
     context.registry.addFunctionDeclaration((node) {
       if (isDirectlyAnnotatedByText(node, shortName, longName)) {
         node.functionExpression.body.accept(
+          _UnawaitedFutureVisitor(reporter: reporter, code: code),
+        );
+      }
+    });
+    context.registry.addMethodDeclaration((node) {
+      if (isDirectlyAnnotatedByText(node, shortName, longName)) {
+        node.body.accept(
           _UnawaitedFutureVisitor(reporter: reporter, code: code),
         );
       }

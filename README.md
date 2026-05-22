@@ -1,7 +1,5 @@
-[![banner](https://github.com/dev-cetera/df_safer_dart_lints/blob/v0.3.5/doc/assets/banner.png?raw=true)](https://github.com/dev-cetera)
-
 [![pub](https://img.shields.io/pub/v/df_safer_dart_lints.svg)](https://pub.dev/packages/df_safer_dart_lints)
-[![tag](https://img.shields.io/badge/Tag-v0.3.5-purple?logo=github)](https://github.com/dev-cetera/df_safer_dart_lints/tree/v0.3.5)
+[![tag](https://img.shields.io/badge/Tag-v0.5.0-purple?logo=github)](https://github.com/dev-cetera/df_safer_dart_lints/tree/v0.5.0)
 [![buymeacoffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/dev_cetera)
 [![sponsor](https://img.shields.io/badge/Sponsor-grey?logo=github-sponsors&logoColor=pink)](https://github.com/sponsors/dev-cetera)
 [![patreon](https://img.shields.io/badge/Patreon-grey?logo=patreon)](https://www.patreon.com/robelator)
@@ -11,99 +9,90 @@
 
 ---
 
-<!-- BEGIN _README_CONTENT -->
-
 ## Summary
 
-`df_safer_dart_lints` provides custom lint rules for [df_safer_dart](https://pub.dev/packages/df_safer_dart) that help enforce safety patterns at compile-time. These rules work with the [custom_lint](https://pub.dev/packages/custom_lint) package.
-
-## Available Lint Rules
-
-| Rule | Severity | Purpose |
-|------|----------|---------|
-| `must_use_outcome_or_error` | Error | Ensures `Option`/`Result`/`Resolvable` return values are handled |
-| `no_future_outcome_type_or_error` | Error | Prevents `Future<Result>` types (use `Async` instead) |
-| `must_await_all_futures` | Warning | Ensures Futures are awaited in annotated scopes |
-| `must_await_all_futures_or_error` | Error | Same as above, but as error |
-| `must_be_anonymous` | Warning | Ensures anonymous functions are passed where required |
-| `must_be_anonymous_or_error` | Error | Same as above, but as error |
-| `must_be_strong_ref` | Warning | Ensures strong-referenced variables are passed (for weak listener patterns) |
-| `must_be_strong_ref_or_error` | Error | Same as above, but as error |
-| `must_handle_return` | Warning | Ensures return values are handled |
-| `must_handle_return_or_error` | Error | Same as above, but as error |
-| `no_futures` | Warning | Prevents Future usage in annotated scopes |
-| `no_futures_or_error` | Error | Same as above, but as error |
-| `must_use_unsafe_wrapper` | Warning | Ensures unsafe calls are wrapped in `UNSAFE()` |
-| `must_use_unsafe_wrapper_or_error` | Error | Same as above, but as error |
+`df_safer_dart_lints` is a `custom_lint` plugin that turns the marker
+annotations from
+[`df_safer_dart_annotations`](https://pub.dev/packages/df_safer_dart_annotations)
+into real compile-time errors. Pair it with
+[`df_safer_dart`](https://pub.dev/packages/df_safer_dart) to enforce the
+"no raw Futures, no try/catch, no unwrap-without-`UNSAFE`" discipline across
+your entire codebase.
 
 ## Installation
 
-Add to your `pubspec.yaml`:
-
-```yaml
-dev_dependencies:
-  custom_lint: any
-  df_safer_dart_lints: any
-  df_safer_dart_annotations: any  # Optional: for annotation-based rules
+```sh
+dart pub add --dev custom_lint df_safer_dart_lints
+# or, for a Flutter project:
+flutter pub add --dev custom_lint df_safer_dart_lints
 ```
 
-Enable in `analysis_options.yaml`:
+Enable the plugin in `analysis_options.yaml`:
 
 ```yaml
 analyzer:
   plugins:
     - custom_lint
-
-# Optional: configure individual rules
-custom_lint:
-  rules:
-    - must_use_outcome_or_error: true
-    - no_future_outcome_type_or_error: true
-    - must_await_all_futures: true
-    - must_be_anonymous: true
-    - must_use_unsafe_wrapper_or_error: true
-    - no_futures: true
-
-# Recommended: suppress warnings for UNSAFE label usage
-errors:
-  unused_label: ignore
-  non_constant_identifier_names: ignore
 ```
 
-## Usage Example
+`df_safer_dart` is the practical companion (it re-exports the annotations and
+provides the `UNSAFE()` wrapper), so most projects depend on it directly:
 
-```dart
-import 'package:df_safer_dart/df_safer_dart.dart';
-
-void main() {
-  // Error: must_use_outcome_or_error
-  // The result must be handled
-  fetchData();  // ❌ Triggers lint error
-
-  // OK: Result is handled
-  final result = fetchData();  // ✅
-  result.map((data) => print(data)).end();  // ✅
-
-  // Error: no_future_outcome_type_or_error
-  // Don't use Future<Result<T>>
-  Future<Result<String>> bad() async { ... }  // ❌ Use Async<String> instead
-}
-
-Async<String> fetchData() {
-  return Async(() async {
-    return 'data';
-  });
-}
+```sh
+dart pub add df_safer_dart
 ```
 
-## Related Packages
+## Rules
 
-- [df_safer_dart](https://pub.dev/packages/df_safer_dart) - Core safety types (Option, Result, Resolvable)
-- [df_safer_dart_annotations](https://pub.dev/packages/df_safer_dart_annotations) - Annotations for these lint rules
-- [custom_lint](https://pub.dev/packages/custom_lint) - Required for running custom lints
+Each annotation has both a *warning* variant (the rule name without suffix)
+and a *strict* variant ending in `_or_error`. Warnings let you migrate
+incrementally; the `_or_error` form blocks the build.
 
+| Lint                                              | Fires when… |
+|---------------------------------------------------|-------------|
+| `must_use_outcome_or_error`                       | an `Outcome` value is dropped as a bare expression statement |
+| `no_future_outcome_type_or_error`                 | a type uses `Future<Outcome<T>>` or `Outcome<Future<T>>` |
+| `no_futures` / `_or_error`                        | a function marked `@noFutures` contains `async`/`await` or a `Future` |
+| `must_await_all_futures` / `_or_error`            | a function marked `@mustAwaitAllFutures` drops a Future as a statement |
+| `must_be_anonymous` / `_or_error`                 | a parameter marked `@mustBeAnonymous` receives a named function reference |
+| `must_be_strong_ref` / `_or_error`                | a parameter marked `@mustBeStrongRef` receives a function literal |
+| `must_handle_return` / `_or_error`                | the return value of a function marked `@mustHandleReturn` is ignored |
+| `must_use_unsafe_wrapper` / `_or_error`           | a call to a method marked `@unsafe`/`@unsafeOrError` is not wrapped in `UNSAFE(() => ...)` |
 
-<!-- END _README_CONTENT -->
+Each rule has a coverage fixture under
+[`example/lib/fixtures/`](https://github.com/dev-cetera/df_safer_dart_lints/tree/main/example/lib/fixtures)
+and is exercised by
+[`test/lint_fixtures_test.dart`](https://github.com/dev-cetera/df_safer_dart_lints/blob/main/test/lint_fixtures_test.dart),
+which runs `dart run custom_lint` over the fixtures and asserts every
+`expect_lint` marker is satisfied.
+
+## Implementation notes
+
+- The plugin matches annotations by *name* (`isDirectlyAnnotatedByText`) so
+  that `@mustBeAnonymousOrError` cannot accidentally satisfy the substring
+  check for `@mustBeAnonymous` — both variants run side by side without
+  collisions.
+- The `must_use_unsafe_wrapper` and `must_handle_return` rules explicitly
+  skip identifiers that appear inside a `CommentReference` (a doc-comment
+  link like `[Outcome.unwrap]`) — those are documentation, not call sites.
+  The skip is an O(1) `node.parent is CommentReference` check, so the rules
+  stay cheap on every analyzer pass.
+- The `UNSAFE` wrapper is detected by its fully-qualified package URI
+  (`package:df_safer_dart/...`), so a sibling package can't masquerade as
+  `UNSAFE` to silence the rule.
+- `must_be_strong_ref` accepts top-level functions, static methods, and
+  instance-method tear-offs as valid "strong" references — only inline
+  function literals fire the rule.
+
+## Running the lints
+
+```sh
+dart run custom_lint
+```
+
+This walks every Dart file in the package and reports diagnostics in plain
+text. Inside an IDE that supports custom_lint (VS Code / IntelliJ with the
+Dart plugin) the diagnostics appear inline with the same severity.
 
 ---
 

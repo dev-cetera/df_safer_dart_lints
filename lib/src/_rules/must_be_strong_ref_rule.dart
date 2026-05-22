@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-// ignore_for_file: deprecated_member_use
 
 import '/_common.dart';
 
@@ -43,19 +42,29 @@ final class MustBeStronglyRefRule extends DartLintRule {
         final parameter = argument.staticParameterElement;
         if (parameter == null) continue;
 
-        if (_checker.hasAnnotationOf(parameter)) {
-          if (argument is FunctionExpression) {
-            reporter.atNode(argument, code);
-            continue;
-          }
-          if (argument is Identifier) {
-            final element = argument.staticElement;
-            final isAllowedReference =
-                element is VariableElement ||
-                element is PropertyAccessorElement;
-            if (!isAllowedReference) {
-              reporter.atNode(argument, code);
-            }
+        if (!_checker.hasAnnotationOf(parameter)) continue;
+
+        final inner = argument is NamedExpression
+            ? argument.expression
+            : argument;
+        if (inner is FunctionExpression) {
+          reporter.atNode(inner, code);
+          continue;
+        }
+        if (inner is Identifier) {
+          final element = inner.staticElement;
+          // Allowed strong references:
+          //  * VariableElement      — `final f = ...; pass(f);`
+          //  * PropertyAccessorElement — `pass(obj.f);` (stored callable)
+          //  * FunctionElement (top-level) — program-lifetime, by definition.
+          //  * MethodElement on a static context — class-lifetime.
+          final isAllowedReference =
+              element is VariableElement ||
+              element is PropertyAccessorElement ||
+              element is FunctionElement ||
+              (element is MethodElement && element.isStatic);
+          if (!isAllowedReference) {
+            reporter.atNode(inner, code);
           }
         }
       }

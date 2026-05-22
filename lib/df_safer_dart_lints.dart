@@ -15,3 +15,4 @@
 library;
 
 export '/src/create_plugin.dart';
+export '/src/utils.dart' show isDirectlyAnnotatedByText, isFutureOrFutureOr;

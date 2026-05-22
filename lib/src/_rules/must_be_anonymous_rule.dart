@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-// ignore_for_file: deprecated_member_use
 
 import '/_common.dart';
 
@@ -45,8 +44,11 @@ final class MustBeAnonymousRule extends DartLintRule {
           continue;
         }
         if (_checker.hasAnnotationOf(parameter)) {
-          if (argument is! FunctionExpression) {
-            reporter.atNode(argument, code);
+          final inner = argument is NamedExpression
+              ? argument.expression
+              : argument;
+          if (inner is! FunctionExpression) {
+            reporter.atNode(inner, code);
           }
         }
       }

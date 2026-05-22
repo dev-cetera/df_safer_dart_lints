@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-// ignore_for_file: deprecated_member_use
 
 import '/_common.dart';
 
@@ -38,9 +37,30 @@ final class NoFuturesRule extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
+    // df_safer_dart implements the abstractions whose @noFutures annotations
+    // this rule enforces; its internals legitimately bridge Futures into the
+    // safe types and must be exempt. The rule is for *consumers*.
+    if (context.pubspec.name == 'df_safer_dart') return;
+
     context.registry.addFunctionDeclaration((node) {
       if (isDirectlyAnnotatedByText(node, shortName, longName)) {
-        _checkFunction(node.functionExpression, reporter, node);
+        _checkBody(
+          body: node.functionExpression.body,
+          returnType: node.functionExpression.declaredElement?.returnType,
+          reporter: reporter,
+          errorNode: node,
+        );
+      }
+    });
+
+    context.registry.addMethodDeclaration((node) {
+      if (isDirectlyAnnotatedByText(node, shortName, longName)) {
+        _checkBody(
+          body: node.body,
+          returnType: node.declaredElement?.returnType,
+          reporter: reporter,
+          errorNode: node,
+        );
       }
     });
 
@@ -49,24 +69,29 @@ final class NoFuturesRule extends DartLintRule {
 
       final paramElement = node.staticParameterElement;
       if (paramElement != null && _checker.hasAnnotationOf(paramElement)) {
-        _checkFunction(node, reporter, node);
+        _checkBody(
+          body: node.body,
+          returnType: node.declaredElement?.returnType,
+          reporter: reporter,
+          errorNode: node,
+        );
       }
     });
   }
 
-  void _checkFunction(
-    FunctionExpression node,
-    ErrorReporter reporter,
-    AstNode errorNode,
-  ) {
-    if (node.body.isAsynchronous) {
+  void _checkBody({
+    required FunctionBody body,
+    required DartType? returnType,
+    required ErrorReporter reporter,
+    required AstNode errorNode,
+  }) {
+    if (body.isAsynchronous) {
       reporter.atNode(errorNode, code, arguments: [shortName]);
     }
-    final returnType = node.declaredElement?.returnType;
     if (_isFutureOrFutureOr(returnType)) {
       reporter.atNode(errorNode, code, arguments: [shortName]);
     }
-    node.body.accept(_NoFuturesVisitor(reporter: reporter, code: code));
+    body.accept(_NoFuturesVisitor(reporter: reporter, code: code));
   }
 }
 

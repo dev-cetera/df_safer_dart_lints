@@ -11,13 +11,17 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-// ignore_for_file: deprecated_member_use
 
 import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-@Deprecated('Use @useResult instead.')
+/// Fires when a function or method annotated `@mustHandleReturn` /
+/// `@mustHandleReturnOrError` has its return value discarded.
+///
+/// Dart's built-in `@useResult` (from `package:meta`) covers most cases.
+/// Prefer it for new code; this rule remains so that existing annotated APIs
+/// keep working alongside the other safer-dart rules.
 final class MustHandleReturnRule extends DartLintRule {
   final String shortName;
   final String longName;
@@ -66,11 +70,20 @@ final class MustHandleReturnRule extends DartLintRule {
     required ErrorReporter reporter,
   }) {
     if (element is! ExecutableElement) return;
+    // Doc-comment references like `/// See [foo]` parse as identifiers whose
+    // direct parent is a CommentReference. O(1) skip.
+    if (node.parent is CommentReference) return;
 
     final returnType = element.returnType;
     if (returnType is VoidType || returnType is NeverType) return;
 
-    if (_hasMustHandleReturnAnnotation(element) && _isResultUnused(node)) {
+    // Order matters for perf — this visitor fires on every identifier in the
+    // file. `_isResultUnused` is a short parent walk; the annotation check
+    // iterates element.metadata. Filter on the cheap check first so the
+    // metadata walk only runs for the small subset of calls whose result is
+    // actually being dropped.
+    if (!_isResultUnused(node)) return;
+    if (_hasMustHandleReturnAnnotation(element)) {
       reporter.atNode(node, code);
     }
   }

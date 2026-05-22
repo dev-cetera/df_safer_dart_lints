@@ -1,3 +1,16 @@
+//.title
+// ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+//
+// Copyright © dev-cetera.com & contributors.
+//
+// The use of this source code is governed by an MIT-style license described in
+// the LICENSE file located in this project's root directory.
+//
+// See: https://opensource.org/license/mit
+//
+// ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
+//.title~
+
 // lib/src/_rules/avoid_nested_futures_in_outcomes_rule.dart
 
 //.title
@@ -13,7 +26,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-// ignore_for_file: deprecated_member_use
 
 import '/_common.dart';
 
@@ -45,6 +57,11 @@ final class NoFutureOutcomeTypeRule extends DartLintRule {
     ErrorReporter reporter,
     CustomLintContext context,
   ) {
+    // df_safer_dart is the package that *defines* Async / Resolvable, whose
+    // internals fundamentally use Future<Result<T>> / FutureOr<Result<T>>.
+    // The rule is for *consumers*, not the implementation.
+    if (context.pubspec.name == 'df_safer_dart') return;
+
     context.registry.addTypeAnnotation((node) {
       final type = node.type;
       if (type == null) return;

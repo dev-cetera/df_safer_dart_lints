@@ -1,5 +1,10 @@
 # For dev-cetera.com
-# Version: 1
+# Version: Dart-1
+#
+# Strict-but-additive analyzer config tuned for df_safer_dart's
+# "mission-critical / military-grade reliability" goals. The lints below are
+# *additions* to package:lints/recommended.yaml — not replacements — and are
+# specifically chosen to catch the failure modes the runtime can't.
 
 include: package:lints/recommended.yaml
 
@@ -7,6 +12,7 @@ include: package:lints/recommended.yaml
 
 linter:
   rules:
+    # ── Style / structure (existing) ──────────────────────────────────────────
     avoid_web_libraries_in_flutter: true
     camel_case_types: false
     constant_identifier_names: false
@@ -24,18 +30,56 @@ linter:
     unawaited_futures: true
     unnecessary_this: true
 
+    # ── Concurrency safety (df_safer_dart's reason for existing) ──────────────
+    # discarded_futures fires when a Future is started but its completion is
+    # not awaited, assigned, or returned. This is the exact bug class the
+    # @noFutures / @mustAwaitAllFutures lints exist to police — having the
+    # built-in catch the same class of mistakes outside annotated regions is
+    # strictly additive.
+    discarded_futures: true
+    unnecessary_await_in_return: true
+    avoid_returning_null_for_void: true
+    cancel_subscriptions: true
+    close_sinks: true
+    control_flow_in_finally: true
+    throw_in_finally: true
+    empty_catches: true
+    void_checks: true
+    no_adjacent_strings_in_list: true
+    valid_regexps: true
+
+    # ── Type / cast safety ─────────────────────────────────────────────────────
+    avoid_dynamic_calls: true
+    cast_nullable_to_non_nullable: true
+    null_check_on_nullable_type_parameter: true
+    avoid_type_to_string: true
+    hash_and_equals: true
+    test_types_in_equals: true
+    recursive_getters: true
+
+    # ── Code clarity that matters for a safety library ────────────────────────
+    avoid_init_to_null: true
+    avoid_unused_constructor_parameters: true
+    prefer_void_to_null: true
+    unnecessary_lambdas: true
+    unnecessary_statements: true
+    use_super_parameters: true
+    prefer_typing_uninitialized_variables: true
+
 analyzer:
-  plugins:
-    - custom_lint
+  # The custom_lint plugin is intentionally not enabled here: this *is* the
+  # lint plugin, so applying its rules to itself would be circular.
+
   language:
     strict-casts: true
     strict-inference: true
     strict-raw-types: true
+
   exclude:
     - build/**
-    # - '**.g.dart'
 
   errors:
+    # ── Existing severity upgrades ────────────────────────────────────────────
     always_declare_return_types: error
     avoid_renaming_method_parameters: error
     avoid_type_to_string: error
@@ -54,6 +98,46 @@ analyzer:
     unrelated_type_equality_checks: error
     unused_label: ignore
     use_key_in_widget_constructors: error
+
+    # ── Package-specific silencing ────────────────────────────────────────────
+    # The rules in this package implement custom_lint plugins by visiting the
+    # Dart analyzer AST. The analyzer is in the middle of migrating from the
+    # legacy `Element` / `staticElement` / `declaredElement` API to the new
+    # `Element2` model (see dart-lang/sdk element_model_migration_guide.md).
+    # The legacy API is still the only one custom_lint_builder fully supports,
+    # so every visitor here uses deprecated members. Silence the diagnostic
+    # package-wide — it would otherwise drown out signal in the IDE.
+    deprecated_member_use: ignore
+
+    # ── Promoted-to-error: silently-broken concurrency invariants ─────────────
+    unawaited_futures: error
+    control_flow_in_finally: error
+    throw_in_finally: error
+    cancel_subscriptions: error
+    empty_catches: error
+    void_checks: error
+
+    # ── Promoted-to-error: cast & equality safety ─────────────────────────────
+    null_check_on_nullable_type_parameter: error
+    hash_and_equals: error
+    test_types_in_equals: error
+    recursive_getters: error
+
+    # ── Demoted-to-info: judgment-required ────────────────────────────────────
+    # discarded_futures fires in concurrency primitives (TaskSequencer,
+    # SafeCompleter) that intentionally manage fire-and-forget futures, and in
+    # tests that intentionally orphan futures to inspect concurrency. The
+    # df_safer_dart_lints custom_lint plugin enforces the same idea more
+    # precisely through @noFutures / @mustAwaitAllFutures — keep this as an
+    # information-only hint so it doesn't fight with library-design decisions.
+    discarded_futures: info
+    # avoid_dynamic_calls: many safe-cast helpers (letOrNull, etc.) legitimately
+    # use dynamic. The cast itself is the unit being tested.
+    avoid_dynamic_calls: info
+    # unnecessary_lambdas: closure-vs-tearoff is a stylistic call; df_safer_dart
+    # consistently uses lambdas for readability of pipelines.
+    unnecessary_lambdas: info
+    unnecessary_await_in_return: info
 
 formatter:
   trailing_commas: preserve
