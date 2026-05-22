@@ -45,7 +45,8 @@ final class NoFuturesRule extends DartLintRule {
       if (isDirectlyAnnotatedByText(node, shortName, longName)) {
         _checkBody(
           body: node.functionExpression.body,
-          returnType: node.functionExpression.declaredElement?.returnType,
+          returnType:
+              node.functionExpression.declaredFragment?.element.returnType,
           reporter: reporter,
           errorNode: node,
         );
@@ -56,7 +57,7 @@ final class NoFuturesRule extends DartLintRule {
       if (isDirectlyAnnotatedByText(node, shortName, longName)) {
         _checkBody(
           body: node.body,
-          returnType: node.declaredElement?.returnType,
+          returnType: node.declaredFragment?.element.returnType,
           reporter: reporter,
           errorNode: node,
         );
@@ -66,11 +67,11 @@ final class NoFuturesRule extends DartLintRule {
     context.registry.addFunctionExpression((node) {
       if (node.parent is FunctionDeclaration) return;
 
-      final paramElement = node.staticParameterElement;
+      final paramElement = node.correspondingParameter;
       if (paramElement != null && _checker.hasAnnotationOf(paramElement)) {
         _checkBody(
           body: node.body,
-          returnType: node.declaredElement?.returnType,
+          returnType: node.declaredFragment?.element.returnType,
           reporter: reporter,
           errorNode: node,
         );
@@ -139,7 +140,7 @@ class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
     if (node.body.isAsynchronous && !_isInSafeContext) {
       reporter.atNode(node.body, code);
     }
-    if (_isFutureOrFutureOr(node.declaredElement?.returnType) &&
+    if (_isFutureOrFutureOr(node.declaredFragment?.element.returnType) &&
         !_isInSafeContext) {
       reporter.atNode(node, code);
     }

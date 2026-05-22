@@ -39,28 +39,28 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     if (context.pubspec.name == 'df_safer_dart') return;
 
     context.registry.addMethodInvocation((node) {
-      _report(node, node.methodName.staticElement, reporter);
+      _report(node, node.methodName.element, reporter);
     });
 
     // Catches unsafe constructors such as `Async.ok(...)` /
     // `Resolvable.result(...)` — these are not MethodInvocations.
     context.registry.addInstanceCreationExpression((node) {
-      _report(node, node.constructorName.staticElement, reporter);
+      _report(node, node.constructorName.element, reporter);
     });
 
     // Catches unsafe getters/static fields accessed as `obj.unsafeGetter`
     // or `Class.unsafeStatic`.
     context.registry.addPropertyAccess((node) {
-      _report(node, node.propertyName.staticElement, reporter);
+      _report(node, node.propertyName.element, reporter);
     });
 
     // Catches `prefix.unsafeMember` patterns (prefixed identifier) — e.g.,
     // a static field reference, or a getter chain like
     // `obj.unsafeGetter.subProp` where the PrefixedIdentifier is the target
-    // of an outer PropertyAccess. The identifier's staticElement filters out
+    // of an outer PropertyAccess. The identifier's element filters out
     // non-member references (class refs, library prefixes), so this is safe.
     context.registry.addPrefixedIdentifier((node) {
-      _report(node, node.identifier.staticElement, reporter);
+      _report(node, node.identifier.element, reporter);
     });
   }
 
@@ -76,13 +76,14 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
   }
 
   bool _isAnnotated(Element element) {
-    if (_checker.hasAnnotationOf(element)) return true;
+    if (element case final Annotatable annotatable) {
+      if (_checker.hasAnnotationOf(annotatable)) return true;
+    }
     // A field-backed getter exposes its annotation on the underlying
     // VariableElement; the synthetic accessor inherits nothing, so check
     // the field too.
-    if (element is PropertyAccessorElement) {
-      final variable = element.variable2;
-      if (variable != null && _checker.hasAnnotationOf(variable)) {
+    if (element is GetterElement) {
+      if (_checker.hasAnnotationOf(element.variable)) {
         return true;
       }
     }
@@ -106,9 +107,9 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     }
 
     // Verify it's the top-level 'UNSAFE' function from our package.
-    final element = node.methodName.staticElement;
-    if (element is! FunctionElement) return false;
-    final uri = element.library.source.uri.toString();
+    final element = node.methodName.element;
+    if (element is! TopLevelFunctionElement) return false;
+    final uri = element.library.uri.toString();
     // Use a trailing '/' so we don't match sibling packages like
     // df_safer_dart_lints or df_safer_dart_annotations.
     return uri == 'package:df_safer_dart/df_safer_dart.dart' ||

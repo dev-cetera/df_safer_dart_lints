@@ -51,7 +51,7 @@ final class AwaitAllFuturesRule extends DartLintRule {
       }
     });
     context.registry.addFunctionExpression((node) {
-      final paramElement = node.staticParameterElement;
+      final paramElement = node.correspondingParameter;
       if (paramElement != null && _checker.hasAnnotationOf(paramElement)) {
         node.body.accept(
           _UnawaitedFutureVisitor(reporter: reporter, code: code),

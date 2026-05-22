@@ -43,22 +43,22 @@ final class MustHandleReturnRule extends DartLintRule {
     CustomLintContext context,
   ) {
     context.registry.addMethodInvocation((node) {
-      final element = node.methodName.staticElement;
+      final element = node.methodName.element;
       _check(node: node, element: element, reporter: reporter);
     });
 
     context.registry.addInstanceCreationExpression((node) {
-      final element = node.constructorName.staticElement;
+      final element = node.constructorName.element;
       _check(node: node, element: element, reporter: reporter);
     });
 
     context.registry.addPrefixedIdentifier((node) {
-      final element = node.staticElement;
+      final element = node.element;
       _check(node: node, element: element, reporter: reporter);
     });
     context.registry.addSimpleIdentifier((node) {
       if (node.parent is MethodInvocation) return;
-      final element = node.staticElement;
+      final element = node.element;
       _check(node: node, element: element, reporter: reporter);
     });
   }
@@ -92,9 +92,9 @@ final class MustHandleReturnRule extends DartLintRule {
       return true;
     }
 
-    if (element is PropertyAccessorElement && element.isGetter) {
-      final variable = element.variable2;
-      if (variable != null && _checker.hasAnnotationOf(variable)) {
+    if (element is GetterElement) {
+      final variable = element.variable;
+      if (_checker.hasAnnotationOf(variable)) {
         return true;
       }
     }

@@ -38,7 +38,7 @@ final class MustBeAnonymousRule extends DartLintRule {
   ) {
     context.registry.addArgumentList((node) {
       for (final argument in node.arguments) {
-        final parameter = argument.staticParameterElement;
+        final parameter = argument.correspondingParameter;
         if (parameter == null) {
           continue;
         }

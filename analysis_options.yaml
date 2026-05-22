@@ -100,13 +100,13 @@ analyzer:
     use_key_in_widget_constructors: error
 
     # ── Package-specific silencing ────────────────────────────────────────────
-    # The rules in this package implement custom_lint plugins by visiting the
-    # Dart analyzer AST. The analyzer is in the middle of migrating from the
-    # legacy `Element` / `staticElement` / `declaredElement` API to the new
-    # `Element2` model (see dart-lang/sdk element_model_migration_guide.md).
-    # The legacy API is still the only one custom_lint_builder fully supports,
-    # so every visitor here uses deprecated members. Silence the diagnostic
-    # package-wide — it would otherwise drown out signal in the IDE.
+    # custom_lint_builder 0.8.x still pins its public API to the legacy
+    # `ErrorReporter` / `ErrorSeverity` / `Annotatable` types from analyzer 8,
+    # which are themselves @Deprecated in favour of `DiagnosticReporter` /
+    # `DiagnosticSeverity` / direct Element/Fragment APIs. Every `DartLintRule`
+    # override and every `LintCode` constructor in this package is forced to
+    # use the deprecated names. Silence the diagnostic package-wide until
+    # custom_lint_builder finishes its own migration.
     deprecated_member_use: ignore
 
     # ── Promoted-to-error: silently-broken concurrency invariants ─────────────
