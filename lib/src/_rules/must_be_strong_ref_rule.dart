@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-
 import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -44,9 +43,8 @@ final class MustBeStronglyRefRule extends DartLintRule {
 
         if (!_checker.hasAnnotationOf(parameter)) continue;
 
-        final inner = argument is NamedExpression
-            ? argument.expression
-            : argument;
+        final inner =
+            argument is NamedExpression ? argument.expression : argument;
         if (inner is FunctionExpression) {
           reporter.atNode(inner, code);
           continue;
@@ -58,8 +56,7 @@ final class MustBeStronglyRefRule extends DartLintRule {
           //  * PropertyAccessorElement — `pass(obj.f);` (stored callable)
           //  * FunctionElement (top-level) — program-lifetime, by definition.
           //  * MethodElement on a static context — class-lifetime.
-          final isAllowedReference =
-              element is VariableElement ||
+          final isAllowedReference = element is VariableElement ||
               element is PropertyAccessorElement ||
               element is FunctionElement ||
               (element is MethodElement && element.isStatic);

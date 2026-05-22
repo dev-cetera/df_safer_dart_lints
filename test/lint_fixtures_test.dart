@@ -80,8 +80,7 @@ void main() {
       expect(
         result.exitCode,
         0,
-        reason:
-            'custom_lint reported diagnostics over example/lib/fixtures.\n'
+        reason: 'custom_lint reported diagnostics over example/lib/fixtures.\n'
             'STDOUT:\n$stdoutText\nSTDERR:\n$stderrText',
       );
     },

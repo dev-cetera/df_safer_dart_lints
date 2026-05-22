@@ -5,7 +5,6 @@
 // Fixture for the `must_use_outcome_or_error` rule.
 // Outcome values dropped as bare expression statements must be flagged.
 
-
 import 'package:df_safer_dart/df_safer_dart.dart';
 
 Sync<int> makeSync() => Sync(() => 1);

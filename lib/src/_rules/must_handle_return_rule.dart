@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-
 import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -103,9 +102,8 @@ final class MustHandleReturnRule extends DartLintRule {
   }
 
   bool _isResultUnused(AstNode node) {
-    final nodeToCheck = node.parent is InvocationExpression
-        ? node.parent!
-        : node;
+    final nodeToCheck =
+        node.parent is InvocationExpression ? node.parent! : node;
     var parent = nodeToCheck.parent;
     if (parent is CascadeExpression) return true;
     while (parent != null) {

@@ -11,7 +11,6 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
-
 import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
@@ -44,9 +43,8 @@ final class MustBeAnonymousRule extends DartLintRule {
           continue;
         }
         if (_checker.hasAnnotationOf(parameter)) {
-          final inner = argument is NamedExpression
-              ? argument.expression
-              : argument;
+          final inner =
+              argument is NamedExpression ? argument.expression : argument;
           if (inner is! FunctionExpression) {
             reporter.atNode(inner, code);
           }
