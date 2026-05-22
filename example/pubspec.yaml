@@ -7,13 +7,11 @@ environment:
   sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
-  df_safer_dart:
-    path: ../../df_safer_dart
-  df_safer_dart_annotations:
-    path: ../../df_safer_dart_annotations
+  df_safer_dart: any
+  df_safer_dart_annotations: any
 
 dev_dependencies:
   lints: ^6.0.0
   custom_lint: ^0.7.5
   df_safer_dart_lints:
-    path: ../
+    path: ..
