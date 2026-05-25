@@ -39,7 +39,7 @@ final class MustUseOutcomeRule extends DartLintRule {
       if (type == null || type is VoidType || type is NeverType) {
         return;
       }
-      if (_checker.isSuperTypeOf(type)) {
+      if (_checker.isAssignableFromType(type)) {
         reporter.atNode(expression, code);
       }
     });

@@ -9,6 +9,8 @@
 
 ---
 
+<!-- BEGIN _README_CONTENT -->
+
 ## Summary
 
 `df_safer_dart_lints` is a `custom_lint` plugin that turns the marker
@@ -93,6 +95,8 @@ dart run custom_lint
 This walks every Dart file in the package and reports diagnostics in plain
 text. Inside an IDE that supports custom_lint (VS Code / IntelliJ with the
 Dart plugin) the diagnostics appear inline with the same severity.
+
+<!-- END _README_CONTENT -->
 
 ---
 

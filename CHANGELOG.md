@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.1
+
+- **fix**: `must_use_outcome` now uses `isAssignableFromType` instead of
+  `isSuperTypeOf` when matching against `Outcome`. The rule now fires on
+  expressions whose static type is assignable to `Outcome` (including
+  cases involving generic bounds and other subtyping nuances) that the
+  stricter supertype-only check previously missed.
+
 ## 0.5.0
 
 - **fix**: `must_be_strong_ref` no longer fires when a top-level function or
