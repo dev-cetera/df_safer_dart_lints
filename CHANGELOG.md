@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.2
+
+- **feat**: new `sendable` (warning) and `sendable_or_error` (error) lints
+  reject arguments to `@sendable` / `@sendableOrError` parameters that
+  cannot survive `SendPort.send`. Closures, instance-method tear-offs, and
+  local-function references are rejected; top-level functions and static
+  methods are accepted. The rule is a no-op for non-function-typed
+  parameters.
+- Bumps `df_safer_dart_annotations` to `^0.3.1` to pick up the new
+  `@sendable` / `@sendableOrError` annotations.
+
 ## 0.5.1
 
 - **fix**: `must_use_outcome` now uses `isAssignableFromType` instead of

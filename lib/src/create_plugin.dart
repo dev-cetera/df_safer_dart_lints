@@ -184,6 +184,32 @@ class _DfSaferDartLinter extends PluginBase {
         ),
         longName: 'UnsafeOrErrorAnnotation',
       ),
+
+      // Sendable Rule
+      SendableRule(
+        code: const LintCode(
+          name: 'sendable',
+          problemMessage:
+              'This argument is not sendable through SendPort. Closures and instance-method tear-offs cannot cross isolate boundaries.',
+          correctionMessage:
+              'Pass a top-level function or a static method reference instead of a closure.',
+          errorSeverity: ErrorSeverity.WARNING,
+        ),
+        shortName: 'sendable',
+        longName: 'SendableAnnotation',
+      ),
+      SendableRule(
+        code: const LintCode(
+          name: 'sendable_or_error',
+          problemMessage:
+              'This argument is not sendable through SendPort. Closures and instance-method tear-offs cannot cross isolate boundaries.',
+          correctionMessage:
+              'Pass a top-level function or a static method reference instead of a closure.',
+          errorSeverity: ErrorSeverity.ERROR,
+        ),
+        shortName: 'sendableOrError',
+        longName: 'SendableOrErrorAnnotation',
+      ),
     ];
   }
 }

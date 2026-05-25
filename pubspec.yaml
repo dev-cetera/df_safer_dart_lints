@@ -19,7 +19,7 @@ funding:
   - https://www.patreon.com/c/robelator
   - https://github.com/sponsors/robelator
 description: Lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotation package.
-version: 0.5.1
+version: 0.5.2
 
 ## -----------------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ environment:
 dependencies:
   analyzer: ^8.0.0
   custom_lint_builder: ^0.8.1
-  df_safer_dart_annotations: ^0.3.0
+  df_safer_dart_annotations: ^0.3.1
 
 ## -----------------------------------------------------------------------------
 
