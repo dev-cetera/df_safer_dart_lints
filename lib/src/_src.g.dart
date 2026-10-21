@@ -7,5 +7,8 @@
 // ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 //.title~
 
+// ignore_for_file: directives_ordering
+
+export './df_safer_dart_lints_plugin.dart';
+export './type_checker.dart';
 export './utils.dart';
-export './create_plugin.dart';

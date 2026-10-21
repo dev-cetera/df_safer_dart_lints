@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:df_safer_dart_annotations/df_safer_dart_annotations.dart';
 
 // A minimal demonstration of df_safer_dart_lints firing.

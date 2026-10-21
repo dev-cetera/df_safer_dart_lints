@@ -15,56 +15,53 @@ import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class MustUseUnsafeWrapperRule extends DartLintRule {
+/// Fires when a member annotated `@unsafe` / `@unsafeOrError` is used outside
+/// an `UNSAFE(() => ...)` call (from `df_safer_dart`) or an `UNSAFE:` labelled
+/// statement.
+final class MustUseUnsafeWrapperRule extends AnalysisRule {
+  final LintCode code;
   final String longName;
+  final NamedTypeChecker _checker;
 
-  late final _checker = TypeChecker.fromName(
-    longName,
-    packageName: 'df_safer_dart_annotations',
-  );
-
-  MustUseUnsafeWrapperRule({required super.code, required this.longName});
+  MustUseUnsafeWrapperRule({required this.code, required this.longName})
+    : _checker = NamedTypeChecker(
+        longName,
+        packageName: 'df_safer_dart_annotations',
+      ),
+      super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
-  void run(
-    CustomLintResolver resolver,
-    ErrorReporter reporter,
-    CustomLintContext context,
+  DiagnosticCode get diagnosticCode => code;
+
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
   ) {
     // df_safer_dart is the package that *defines* the @unsafeOrError
     // primitives. Its own implementation legitimately calls them — flagging
     // those would force every internal Sync.okValue/Async.okValue/... to be
     // wrapped in UNSAFE(...), which adds runtime cost and visual noise for no
     // safety benefit. The rule is for *consumers*, not the implementation.
-    if (context.pubspec.name == 'df_safer_dart') return;
+    if (isInDfSaferDartPackage(context)) return;
 
-    context.registry.addMethodInvocation((node) {
-      _report(node, node.methodName.element, reporter);
-    });
-
+    final visitor = _Visitor(this);
+    registry.addMethodInvocation(this, visitor);
     // Catches unsafe constructors such as `Async.ok(...)` /
     // `Resolvable.result(...)` — these are not MethodInvocations.
-    context.registry.addInstanceCreationExpression((node) {
-      _report(node, node.constructorName.element, reporter);
-    });
-
+    registry.addInstanceCreationExpression(this, visitor);
     // Catches unsafe getters/static fields accessed as `obj.unsafeGetter`
     // or `Class.unsafeStatic`.
-    context.registry.addPropertyAccess((node) {
-      _report(node, node.propertyName.element, reporter);
-    });
-
+    registry.addPropertyAccess(this, visitor);
     // Catches `prefix.unsafeMember` patterns (prefixed identifier) — e.g.,
     // a static field reference, or a getter chain like
     // `obj.unsafeGetter.subProp` where the PrefixedIdentifier is the target
     // of an outer PropertyAccess. The identifier's element filters out
     // non-member references (class refs, library prefixes), so this is safe.
-    context.registry.addPrefixedIdentifier((node) {
-      _report(node, node.identifier.element, reporter);
-    });
+    registry.addPrefixedIdentifier(this, visitor);
   }
 
-  void _report(AstNode node, Element? element, ErrorReporter reporter) {
+  void _report(AstNode node, Element? element) {
     if (element == null) return;
     // Doc-comment references (e.g. `/// See [Outcome.unwrap]`) parse into
     // (Prefixed|Simple)Identifier nodes whose parent is a CommentReference.
@@ -72,13 +69,11 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     if (node.parent is CommentReference) return;
     if (!_isAnnotated(element)) return;
     if (_isInsideUnsafeWrapper(node)) return;
-    reporter.atNode(node, code);
+    reportAtNode(node);
   }
 
   bool _isAnnotated(Element element) {
-    if (element case final Annotatable annotatable) {
-      if (_checker.hasAnnotationOf(annotatable)) return true;
-    }
+    if (_checker.hasAnnotationOf(element)) return true;
     // A field-backed getter exposes its annotation on the underlying
     // VariableElement; the synthetic accessor inherits nothing, so check
     // the field too.
@@ -120,6 +115,34 @@ final class MustUseUnsafeWrapperRule extends DartLintRule {
     if (node is! LabeledStatement) {
       return false;
     }
-    return node.labels.any((label) => label.label.name == 'UNSAFE');
+    return node.labels.any((label) => label.name.lexeme == 'UNSAFE');
+  }
+}
+
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+class _Visitor extends SimpleAstVisitor<void> {
+  final MustUseUnsafeWrapperRule rule;
+
+  _Visitor(this.rule);
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    rule._report(node, node.methodName.element);
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    rule._report(node, node.constructorName.element);
+  }
+
+  @override
+  void visitPropertyAccess(PropertyAccess node) {
+    rule._report(node, node.propertyName.element);
+  }
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    rule._report(node, node.identifier.element);
   }
 }

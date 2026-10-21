@@ -11,12 +11,16 @@ Future<int> work() async => 1;
 
 @mustAwaitAllFuturesOrError
 Future<void> firesError() async {
-  //work();
+  // The trailing ignore silences the built-in lints that police the same
+  // mistake everywhere; this fixture is about the plugin's rule.
+  // expect_lint: must_await_all_futures_or_error
+  work(); // ignore: unawaited_futures
 }
 
 @mustAwaitAllFutures
 Future<void> firesWarning() async {
-  //work();
+  // expect_lint: must_await_all_futures
+  work(); // ignore: unawaited_futures
 }
 
 @mustAwaitAllFuturesOrError

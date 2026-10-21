@@ -37,7 +37,6 @@ linter:
     # built-in catch the same class of mistakes outside annotated regions is
     # strictly additive.
     discarded_futures: true
-    unnecessary_await_in_return: true
     avoid_returning_null_for_void: true
     cancel_subscriptions: true
     close_sinks: true
@@ -67,8 +66,8 @@ linter:
     prefer_typing_uninitialized_variables: true
 
 analyzer:
-  # The custom_lint plugin is intentionally not enabled here: this *is* the
-  # lint plugin, so applying its rules to itself would be circular.
+  # The plugin is intentionally not enabled here: this *is* the plugin, so
+  # applying its rules to itself would be circular.
 
   language:
     strict-casts: true
@@ -77,6 +76,10 @@ analyzer:
 
   exclude:
     - build/**
+    # example/ is a separate package with its own analysis_options.yaml that
+    # enables this plugin; its fixtures fire the rules on purpose (checked by
+    # test/lint_fixtures_test.dart). Analyse it from inside example/.
+    - example/**
 
   errors:
     # ── Existing severity upgrades ────────────────────────────────────────────
@@ -99,16 +102,6 @@ analyzer:
     unused_label: ignore
     use_key_in_widget_constructors: error
 
-    # ── Package-specific silencing ────────────────────────────────────────────
-    # custom_lint_builder 0.8.x still pins its public API to the legacy
-    # `ErrorReporter` / `ErrorSeverity` / `Annotatable` types from analyzer 8,
-    # which are themselves @Deprecated in favour of `DiagnosticReporter` /
-    # `DiagnosticSeverity` / direct Element/Fragment APIs. Every `DartLintRule`
-    # override and every `LintCode` constructor in this package is forced to
-    # use the deprecated names. Silence the diagnostic package-wide until
-    # custom_lint_builder finishes its own migration.
-    deprecated_member_use: ignore
-
     # ── Promoted-to-error: silently-broken concurrency invariants ─────────────
     unawaited_futures: error
     control_flow_in_finally: error
@@ -127,7 +120,7 @@ analyzer:
     # discarded_futures fires in concurrency primitives (TaskSequencer,
     # SafeCompleter) that intentionally manage fire-and-forget futures, and in
     # tests that intentionally orphan futures to inspect concurrency. The
-    # df_safer_dart_lints custom_lint plugin enforces the same idea more
+    # df_safer_dart_lints analyzer plugin enforces the same idea more
     # precisely through @noFutures / @mustAwaitAllFutures — keep this as an
     # information-only hint so it doesn't fight with library-design decisions.
     discarded_futures: info
@@ -137,7 +130,6 @@ analyzer:
     # unnecessary_lambdas: closure-vs-tearoff is a stylistic call; df_safer_dart
     # consistently uses lambdas for readability of pipelines.
     unnecessary_lambdas: info
-    unnecessary_await_in_return: info
 
 formatter:
   trailing_commas: preserve

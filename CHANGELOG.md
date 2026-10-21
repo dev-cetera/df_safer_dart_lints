@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.6.0
+
+- **breaking**: `df_safer_dart_lints` is now a native Dart analyzer plugin
+  (`analysis_server_plugin`) instead of a `custom_lint` plugin, because Dart
+  3.13 deprecates the legacy plugin system that `custom_lint` relies on.
+  Diagnostics now appear in `dart analyze` and the IDE with no extra
+  command (`flutter analyze` 3.47 does not wait for plugin diagnostics, so
+  use `dart analyze` in CI). To upgrade: remove `custom_lint` and
+  `df_safer_dart_lints` from `dev_dependencies`, remove `- custom_lint` from
+  `analyzer: plugins:`, add `plugins: df_safer_dart_lints: ^0.6.0` at the top
+  level of `analysis_options.yaml`, and replace `dart run custom_lint` with
+  `dart analyze`. See the README.
+- **breaking**: ignore comments must name the plugin, e.g.
+  `// ignore: df_safer_dart_lints/must_handle_return`.
+- **breaking**: requires Dart 3.13 or newer. Depends on
+  `analysis_server_plugin` instead of `custom_lint_builder`; the plugin
+  resolves its `analyzer` in the analysis server's own environment, not in
+  the consuming project.
+- **feat**: every rule keeps its name, message and severity and is on by
+  default; rules can now be disabled or re-levelled per project under
+  `plugins: df_safer_dart_lints: diagnostics:`.
+- **breaking**: `createPlugin()` is replaced by `DfSaferDartLintsPlugin` and
+  `createDfSaferDartRules()`.
+
 ## 0.5.2
 
 - **feat**: new `sendable` (warning) and `sendable_or_error` (error) lints

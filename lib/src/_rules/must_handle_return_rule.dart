@@ -21,53 +21,38 @@ import '/_common.dart';
 /// Dart's built-in `@useResult` (from `package:meta`) covers most cases.
 /// Prefer it for new code; this rule remains so that existing annotated APIs
 /// keep working alongside the other safer-dart rules.
-final class MustHandleReturnRule extends DartLintRule {
+final class MustHandleReturnRule extends AnalysisRule {
+  final LintCode code;
   final String shortName;
   final String longName;
-
-  late final _checker = TypeChecker.fromName(
-    longName,
-    packageName: 'df_safer_dart_annotations',
-  );
+  final NamedTypeChecker _checker;
 
   MustHandleReturnRule({
-    required super.code,
+    required this.code,
     required this.shortName,
     required this.longName,
-  });
+  }) : _checker = NamedTypeChecker(
+         longName,
+         packageName: 'df_safer_dart_annotations',
+       ),
+       super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
-  void run(
-    CustomLintResolver resolver,
-    ErrorReporter reporter,
-    CustomLintContext context,
+  DiagnosticCode get diagnosticCode => code;
+
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
   ) {
-    context.registry.addMethodInvocation((node) {
-      final element = node.methodName.element;
-      _check(node: node, element: element, reporter: reporter);
-    });
-
-    context.registry.addInstanceCreationExpression((node) {
-      final element = node.constructorName.element;
-      _check(node: node, element: element, reporter: reporter);
-    });
-
-    context.registry.addPrefixedIdentifier((node) {
-      final element = node.element;
-      _check(node: node, element: element, reporter: reporter);
-    });
-    context.registry.addSimpleIdentifier((node) {
-      if (node.parent is MethodInvocation) return;
-      final element = node.element;
-      _check(node: node, element: element, reporter: reporter);
-    });
+    final visitor = _Visitor(this);
+    registry.addMethodInvocation(this, visitor);
+    registry.addInstanceCreationExpression(this, visitor);
+    registry.addPrefixedIdentifier(this, visitor);
+    registry.addSimpleIdentifier(this, visitor);
   }
 
-  void _check({
-    required AstNode node,
-    required Element? element,
-    required ErrorReporter reporter,
-  }) {
+  void _check({required AstNode node, required Element? element}) {
     if (element is! ExecutableElement) return;
     // Doc-comment references like `/// See [foo]` parse as identifiers whose
     // direct parent is a CommentReference. O(1) skip.
@@ -83,7 +68,7 @@ final class MustHandleReturnRule extends DartLintRule {
     // actually being dropped.
     if (!_isResultUnused(node)) return;
     if (_hasMustHandleReturnAnnotation(element)) {
-      reporter.atNode(node, code);
+      reportAtNode(node);
     }
   }
 
@@ -102,8 +87,9 @@ final class MustHandleReturnRule extends DartLintRule {
   }
 
   bool _isResultUnused(AstNode node) {
-    final nodeToCheck =
-        node.parent is InvocationExpression ? node.parent! : node;
+    final nodeToCheck = node.parent is InvocationExpression
+        ? node.parent!
+        : node;
     var parent = nodeToCheck.parent;
     if (parent is CascadeExpression) return true;
     while (parent != null) {
@@ -114,5 +100,34 @@ final class MustHandleReturnRule extends DartLintRule {
       parent = parent.parent;
     }
     return false;
+  }
+}
+
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+class _Visitor extends SimpleAstVisitor<void> {
+  final MustHandleReturnRule rule;
+
+  _Visitor(this.rule);
+
+  @override
+  void visitMethodInvocation(MethodInvocation node) {
+    rule._check(node: node, element: node.methodName.element);
+  }
+
+  @override
+  void visitInstanceCreationExpression(InstanceCreationExpression node) {
+    rule._check(node: node, element: node.constructorName.element);
+  }
+
+  @override
+  void visitPrefixedIdentifier(PrefixedIdentifier node) {
+    rule._check(node: node, element: node.element);
+  }
+
+  @override
+  void visitSimpleIdentifier(SimpleIdentifier node) {
+    if (node.parent is MethodInvocation) return;
+    rule._check(node: node, element: node.element);
   }
 }

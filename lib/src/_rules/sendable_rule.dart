@@ -21,71 +21,43 @@ import '/_common.dart';
 ///
 /// For non-function-typed parameters this rule is a no-op — the isolate
 /// runtime enforces data sendability when `.send` actually executes.
-final class SendableRule extends DartLintRule {
+final class SendableRule extends AnalysisRule {
+  final LintCode code;
   final String shortName;
   final String longName;
-
-  late final _checker = TypeChecker.fromName(
-    longName,
-    packageName: 'df_safer_dart_annotations',
-  );
+  final NamedTypeChecker _checker;
 
   // Transitive-propagation checkers: an argument that comes from another
   // @sendable-annotated parameter is already vetted by the outer call site,
   // so it can be passed through without firing again here.
-  static const _sendableChecker = TypeChecker.fromName(
+  static const _sendableChecker = NamedTypeChecker(
     'SendableAnnotation',
     packageName: 'df_safer_dart_annotations',
   );
-  static const _sendableOrErrorChecker = TypeChecker.fromName(
+  static const _sendableOrErrorChecker = NamedTypeChecker(
     'SendableOrErrorAnnotation',
     packageName: 'df_safer_dart_annotations',
   );
 
   SendableRule({
-    required super.code,
+    required this.code,
     required this.shortName,
     required this.longName,
-  });
+  }) : _checker = NamedTypeChecker(
+         longName,
+         packageName: 'df_safer_dart_annotations',
+       ),
+       super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
-  void run(
-    CustomLintResolver resolver,
-    ErrorReporter reporter,
-    CustomLintContext context,
+  DiagnosticCode get diagnosticCode => code;
+
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
   ) {
-    context.registry.addArgumentList((node) {
-      for (final argument in node.arguments) {
-        final parameter = argument.correspondingParameter;
-        if (parameter == null) continue;
-        if (!_checker.hasAnnotationOf(parameter)) continue;
-
-        final inner =
-            argument is NamedExpression ? argument.expression : argument;
-
-        if (!_isFunctionTyped(parameter.type)) continue;
-
-        // `null` carries no captured state — always sendable.
-        if (inner is NullLiteral) continue;
-
-        if (inner is FunctionExpression) {
-          reporter.atNode(inner, code);
-          continue;
-        }
-
-        if (inner is Identifier) {
-          final element = inner.element;
-          if (_isSendableFnReference(element)) continue;
-          reporter.atNode(inner, code);
-          continue;
-        }
-
-        // PropertyAccess (e.g. `Foo.bar` where `bar` is a static method) is
-        // already an Identifier after resolution in most analyzer versions;
-        // anything else is conservatively rejected.
-        reporter.atNode(inner, code);
-      }
-    });
+    registry.addArgumentList(this, _Visitor(this));
   }
 
   /// True when [element] points to something the isolate runtime can send:
@@ -99,8 +71,7 @@ final class SendableRule extends DartLintRule {
     if (element == null) return false;
     if (element is TopLevelFunctionElement) return true;
     if (element is MethodElement && element.isStatic) return true;
-    if (element is FormalParameterElement &&
-        _hasSendableAnnotation(element)) {
+    if (element is FormalParameterElement && _hasSendableAnnotation(element)) {
       return true;
     }
     if (element is FieldElement && _hasSendableAnnotation(element)) {
@@ -117,7 +88,7 @@ final class SendableRule extends DartLintRule {
     return false;
   }
 
-  static bool _hasSendableAnnotation(Annotatable element) {
+  static bool _hasSendableAnnotation(Element element) {
     return _sendableChecker.hasAnnotationOf(element) ||
         _sendableOrErrorChecker.hasAnnotationOf(element);
   }
@@ -125,5 +96,46 @@ final class SendableRule extends DartLintRule {
   static bool _isFunctionTyped(DartType type) {
     return type is FunctionType ||
         (type.alias?.element.aliasedType is FunctionType);
+  }
+}
+
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+class _Visitor extends SimpleAstVisitor<void> {
+  final SendableRule rule;
+
+  _Visitor(this.rule);
+
+  @override
+  void visitArgumentList(ArgumentList node) {
+    for (final argument in node.arguments) {
+      final parameter = argument.correspondingParameter;
+      if (parameter == null) continue;
+      if (!rule._checker.hasAnnotationOf(parameter)) continue;
+
+      final inner = argument.argumentExpression;
+
+      if (!SendableRule._isFunctionTyped(parameter.type)) continue;
+
+      // `null` carries no captured state — always sendable.
+      if (inner is NullLiteral) continue;
+
+      if (inner is FunctionExpression) {
+        rule.reportAtNode(inner);
+        continue;
+      }
+
+      if (inner is Identifier) {
+        final element = inner.element;
+        if (SendableRule._isSendableFnReference(element)) continue;
+        rule.reportAtNode(inner);
+        continue;
+      }
+
+      // PropertyAccess (e.g. `Foo.bar` where `bar` is a static method) is
+      // already an Identifier after resolution in most analyzer versions;
+      // anything else is conservatively rejected.
+      rule.reportAtNode(inner);
+    }
   }
 }

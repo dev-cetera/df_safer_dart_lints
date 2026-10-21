@@ -18,25 +18,27 @@ funding:
   - https://www.buymeacoffee.com/dev_cetera
   - https://www.patreon.com/c/robelator
   - https://github.com/sponsors/robelator
-description: Lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotation package.
-version: 0.5.2
+description: Analyzer plugin with lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotations package.
+version: 0.6.0
 
 ## -----------------------------------------------------------------------------
 
 environment:
-  sdk: ">=3.5.0 <4.0.0"
+  sdk: ">=3.13.0 <4.0.0"
 
 ## -----------------------------------------------------------------------------
 
 dependencies:
-  analyzer: ^8.0.0
-  custom_lint_builder: ^0.8.1
+  analysis_server_plugin: ^0.3.25
+  analyzer: ^14.6.0
   df_safer_dart_annotations: ^0.3.1
 
 ## -----------------------------------------------------------------------------
 
 dev_dependencies:
+  analyzer_testing: ^0.4.4
   lints: ^6.0.0
   test: ^1.26.2
+  test_reflective_loader: ^0.6.0
 
 

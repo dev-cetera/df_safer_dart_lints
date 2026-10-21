@@ -15,33 +15,51 @@ import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class MustUseOutcomeRule extends DartLintRule {
-  final _checker = const TypeChecker.fromName(
+/// Fires when an expression whose static type is assignable to `Outcome`
+/// (from `df_safer_dart`) is dropped as a bare expression statement.
+final class MustUseOutcomeRule extends AnalysisRule {
+  static const _checker = NamedTypeChecker(
     'Outcome',
     packageName: 'df_safer_dart',
   );
 
-  const MustUseOutcomeRule({required super.code});
+  final LintCode code;
+
+  MustUseOutcomeRule({required this.code})
+    : super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
-  void run(
-    CustomLintResolver resolver,
-    ErrorReporter reporter,
-    CustomLintContext context,
-  ) {
-    context.registry.addExpressionStatement((node) {
-      final expression = node.expression;
+  DiagnosticCode get diagnosticCode => code;
 
-      if (expression is AssignmentExpression) {
-        return;
-      }
-      final type = expression.staticType;
-      if (type == null || type is VoidType || type is NeverType) {
-        return;
-      }
-      if (_checker.isAssignableFromType(type)) {
-        reporter.atNode(expression, code);
-      }
-    });
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
+  ) {
+    registry.addExpressionStatement(this, _Visitor(this));
+  }
+}
+
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+class _Visitor extends SimpleAstVisitor<void> {
+  final MustUseOutcomeRule rule;
+
+  _Visitor(this.rule);
+
+  @override
+  void visitExpressionStatement(ExpressionStatement node) {
+    final expression = node.expression;
+
+    if (expression is AssignmentExpression) {
+      return;
+    }
+    final type = expression.staticType;
+    if (type == null || type is VoidType || type is NeverType) {
+      return;
+    }
+    if (MustUseOutcomeRule._checker.isAssignableFromType(type)) {
+      rule.reportAtNode(expression);
+    }
   }
 }

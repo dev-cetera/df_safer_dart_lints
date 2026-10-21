@@ -37,7 +37,7 @@ MethodDeclaration _parseFirstMethod(String source) {
   );
   for (final declaration in result.unit.declarations) {
     if (declaration is ClassDeclaration) {
-      for (final member in declaration.members) {
+      for (final member in declaration.body.members) {
         if (member is MethodDeclaration) return member;
       }
     }

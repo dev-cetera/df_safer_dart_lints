@@ -15,122 +15,138 @@ import '/_common.dart';
 
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
-final class NoFuturesRule extends DartLintRule {
+/// Fires when a function or method annotated `@noFutures` /
+/// `@noFuturesOrError` (or a function literal passed to a parameter with that
+/// annotation) is `async`, returns a `Future`, or contains a `Future`.
+///
+/// Futures wrapped in `Async(...)` / `Resolvable(...)` from `df_safer_dart`
+/// are the sanctioned way to bridge async work, so they are not reported.
+final class NoFuturesRule extends AnalysisRule {
+  final LintCode code;
   final String shortName;
   final String longName;
-
-  late final _checker = TypeChecker.fromName(
-    longName,
-    packageName: 'df_safer_dart_annotations',
-  );
+  final NamedTypeChecker _checker;
 
   NoFuturesRule({
-    required super.code,
+    required this.code,
     required this.shortName,
     required this.longName,
-  });
+  }) : _checker = NamedTypeChecker(
+         longName,
+         packageName: 'df_safer_dart_annotations',
+       ),
+       super(name: code.lowerCaseName, description: code.problemMessage);
 
   @override
-  void run(
-    CustomLintResolver resolver,
-    ErrorReporter reporter,
-    CustomLintContext context,
+  DiagnosticCode get diagnosticCode => code;
+
+  @override
+  void registerNodeProcessors(
+    RuleVisitorRegistry registry,
+    RuleContext context,
   ) {
     // df_safer_dart implements the abstractions whose @noFutures annotations
     // this rule enforces; its internals legitimately bridge Futures into the
     // safe types and must be exempt. The rule is for *consumers*.
-    if (context.pubspec.name == 'df_safer_dart') return;
+    if (isInDfSaferDartPackage(context)) return;
 
-    context.registry.addFunctionDeclaration((node) {
-      if (isDirectlyAnnotatedByText(node, shortName, longName)) {
-        _checkBody(
-          body: node.functionExpression.body,
-          returnType:
-              node.functionExpression.declaredFragment?.element.returnType,
-          reporter: reporter,
-          errorNode: node,
-        );
-      }
-    });
-
-    context.registry.addMethodDeclaration((node) {
-      if (isDirectlyAnnotatedByText(node, shortName, longName)) {
-        _checkBody(
-          body: node.body,
-          returnType: node.declaredFragment?.element.returnType,
-          reporter: reporter,
-          errorNode: node,
-        );
-      }
-    });
-
-    context.registry.addFunctionExpression((node) {
-      if (node.parent is FunctionDeclaration) return;
-
-      final paramElement = node.correspondingParameter;
-      if (paramElement != null && _checker.hasAnnotationOf(paramElement)) {
-        _checkBody(
-          body: node.body,
-          returnType: node.declaredFragment?.element.returnType,
-          reporter: reporter,
-          errorNode: node,
-        );
-      }
-    });
+    final visitor = _Visitor(this);
+    registry.addFunctionDeclaration(this, visitor);
+    registry.addMethodDeclaration(this, visitor);
+    registry.addFunctionExpression(this, visitor);
   }
 
   void _checkBody({
     required FunctionBody body,
     required DartType? returnType,
-    required ErrorReporter reporter,
     required AstNode errorNode,
   }) {
     if (body.isAsynchronous) {
-      reporter.atNode(errorNode, code, arguments: [shortName]);
+      reportAtNode(errorNode);
     }
-    if (_isFutureOrFutureOr(returnType)) {
-      reporter.atNode(errorNode, code, arguments: [shortName]);
+    if (isFutureOrFutureOr(returnType)) {
+      reportAtNode(errorNode);
     }
-    body.accept(_NoFuturesVisitor(reporter: reporter, code: code));
+    body.accept(_NoFuturesVisitor(this));
   }
 }
 
-bool _isFutureOrFutureOr(DartType? type) {
-  return type != null && (type.isDartAsyncFuture || type.isDartAsyncFutureOr);
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+class _Visitor extends SimpleAstVisitor<void> {
+  final NoFuturesRule rule;
+
+  _Visitor(this.rule);
+
+  @override
+  void visitFunctionDeclaration(FunctionDeclaration node) {
+    if (isDirectlyAnnotatedByText(node, rule.shortName, rule.longName)) {
+      rule._checkBody(
+        body: node.functionExpression.body,
+        returnType:
+            node.functionExpression.declaredFragment?.element.returnType,
+        errorNode: node,
+      );
+    }
+  }
+
+  @override
+  void visitMethodDeclaration(MethodDeclaration node) {
+    if (isDirectlyAnnotatedByText(node, rule.shortName, rule.longName)) {
+      rule._checkBody(
+        body: node.body,
+        returnType: node.declaredFragment?.element.returnType,
+        errorNode: node,
+      );
+    }
+  }
+
+  @override
+  void visitFunctionExpression(FunctionExpression node) {
+    if (node.parent is FunctionDeclaration) return;
+
+    final paramElement = node.correspondingParameter;
+    if (paramElement != null && rule._checker.hasAnnotationOf(paramElement)) {
+      rule._checkBody(
+        body: node.body,
+        returnType: node.declaredFragment?.element.returnType,
+        errorNode: node,
+      );
+    }
+  }
 }
 
-// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+// ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
-  final ErrorReporter reporter;
-  final LintCode code;
+  final NoFuturesRule rule;
 
   int _safeContextDepth = 0;
   bool get _isInSafeContext => _safeContextDepth > 0;
 
-  static final _asyncChecker = const TypeChecker.fromName(
+  static const _asyncChecker = NamedTypeChecker(
     'Async',
     packageName: 'df_safer_dart',
   );
 
-  static final _resolvableChecker = const TypeChecker.fromName(
+  static const _resolvableChecker = NamedTypeChecker(
     'Resolvable',
     packageName: 'df_safer_dart',
   );
 
-  _NoFuturesVisitor({required this.reporter, required this.code});
+  _NoFuturesVisitor(this.rule);
 
   void _check(Expression node) {
     if (_isInSafeContext) return;
-    if (_isFutureOrFutureOr(node.staticType)) {
-      reporter.atNode(node, code);
+    if (isFutureOrFutureOr(node.staticType)) {
+      rule.reportAtNode(node);
     }
   }
 
   @override
   void visitAwaitExpression(AwaitExpression node) {
     if (!_isInSafeContext) {
-      reporter.atNode(node, code);
+      rule.reportAtNode(node);
     }
     super.visitAwaitExpression(node);
   }
@@ -138,11 +154,11 @@ class _NoFuturesVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitFunctionExpression(FunctionExpression node) {
     if (node.body.isAsynchronous && !_isInSafeContext) {
-      reporter.atNode(node.body, code);
+      rule.reportAtNode(node.body);
     }
-    if (_isFutureOrFutureOr(node.declaredFragment?.element.returnType) &&
+    if (isFutureOrFutureOr(node.declaredFragment?.element.returnType) &&
         !_isInSafeContext) {
-      reporter.atNode(node, code);
+      rule.reportAtNode(node);
     }
     super.visitFunctionExpression(node);
   }

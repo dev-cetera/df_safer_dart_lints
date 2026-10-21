@@ -6,6 +6,7 @@
 // and Outcome<Future<T>> nesting must be flagged at the type-annotation site.
 
 import 'dart:async';
+
 import 'package:df_safer_dart/df_safer_dart.dart';
 
 // expect_lint: no_future_outcome_type_or_error
