@@ -1,10 +1,11 @@
 name: df_safer_dart_lints_example
 homepage: https://dev-cetera.com/
+repository: https://github.com/dev-cetera/df_safer_dart_lints
 publish_to: none
 version: 0.1.0
 
 environment:
-  sdk: ">=3.13.0 <4.0.0"
+  sdk: ">=3.5.0 <4.0.0"
 
 dependencies:
   df_safer_dart: ^0.20.0
