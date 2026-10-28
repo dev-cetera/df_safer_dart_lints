@@ -17,6 +17,12 @@ repository: https://github.com/dev-cetera/df_safer_dart_lints
 description: Analyzer plugin with lints for the df_safer_dart package. Uses annotations from the df_safer_dart_annotations package.
 version: 0.7.2
 
+topics:
+  - lints
+  - analyzer-plugin
+  - static-analysis
+  - safety
+  - dart
 ## -----------------------------------------------------------------------------
 
 environment:
